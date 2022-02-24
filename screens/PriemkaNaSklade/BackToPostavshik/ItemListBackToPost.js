@@ -17,7 +17,11 @@ import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import CardInItems from '../../../components/Perepalechivanie/CardInItems';
 import ListItemComponent from '../../../components/Perepalechivanie/ListItemComponent';
 import HeaderPriemka from '../../../components/PriemkaNaSklade/Header';
-import {alertActions, TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {
+  alertActions,
+  MAIN_COLOR,
+  TOGGLE_SCANNING,
+} from '../../../constants/funcrions';
 import {PocketPerepalPalTo} from '../../../functions/PocketPerepalPalTo';
 import PerepalechivanieStore from '../../../mobx/PerepalechivanieStore';
 import BotNavigation from '../PriemMestnyh/BotNavigation';
@@ -62,15 +66,15 @@ const ItemListBackToPost = observer(props => {
 
   useEffect(() => {
     return () => {
-      PerepalechivanieStore.skipCheck = false;
+      BackToPostavshikStore.skipCheck = false;
     };
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      PerepalechivanieStore.skipCheck
+      BackToPostavshikStore.skipCheck
         ? updateList()
-        : (PerepalechivanieStore.skipCheck = true);
+        : (BackToPostavshikStore.skipCheck = true);
       return () => {
         //RBSheetRef.current.close();
         setMounted(true);
@@ -78,11 +82,12 @@ const ItemListBackToPost = observer(props => {
     }, []),
   );
 
-  let dataProvider = new DataProvider((r1, r2) => {
-    return r1 !== r2;
-  }).cloneWithRows(
-    BackToPostavshikStore.specsrow.map((r, i) => ({...r, id: i + 1})),
-  );
+  let dataProvider =
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    }).cloneWithRows(
+      BackToPostavshikStore.specsrow?.map((r, i) => ({...r, id: i + 1})),
+    ) ?? [];
 
   function _rowRenderer(type, data) {
     //You can return any view here, CellContainer has no special significance
@@ -101,34 +106,6 @@ const ItemListBackToPost = observer(props => {
     checkOnlyDbs: false,
     deleteDbs: false,
   });
-
-  const EquilQtyToFrom = (all = 'true') => {
-    PocketPerepalDiff(
-      PerepalechivanieStore.parrentId,
-      all,
-      user.user.TokenData[0].$.UserUID,
-      user.user.$['city.cod'],
-    )
-      .then(r => {
-        console.log(typeof r);
-        PerepalechivanieStore.checkQtyMergeList = r;
-        RBSheetRef.current.close();
-        setModalVisible(true);
-        setLoading({
-          checkAll: false,
-          checkOnlyDbs: false,
-          deleteDbs: false,
-        });
-      })
-      .catch(e => {
-        alertActions(e);
-        setLoading({
-          checkAll: false,
-          checkOnlyDbs: false,
-          deleteDbs: false,
-        });
-      });
-  };
 
   const updateList = () => {
     setRefreshing(true);
@@ -151,41 +128,6 @@ const ItemListBackToPost = observer(props => {
 
   const RBSheetRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
-
-  const createTwoButtonAlert = () =>
-    Alert.alert('Удаление данных DBS', 'Вы хотите удалить данные DBS?', [
-      {
-        text: 'Отмена',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {
-        text: 'Да',
-        onPress: () => {
-          setLoading({...loading, deleteDbs: true});
-
-          PocketPerepalClear(
-            PerepalechivanieStore.parrentId,
-            user.user.TokenData[0].$.UserUID,
-            user.user.$['city.cod'],
-          )
-            .then(r => {
-              console.log(r);
-              RBSheetRef.current.close();
-              navigation.navigate('StartPerepalech');
-              PerepalechivanieStore.resetStore();
-            })
-            .catch(e => {
-              alertActions(e);
-              setLoading({
-                checkAll: false,
-                checkOnlyDbs: false,
-                deleteDbs: false,
-              });
-            });
-        },
-      },
-    ]);
 
   return (
     <View style={styles.countainer}>
@@ -250,7 +192,7 @@ const ItemListBackToPost = observer(props => {
               width: '90%',
               height: 48,
               alignSelf: 'center',
-              backgroundColor: '#313C47',
+              backgroundColor: MAIN_COLOR,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 8,

@@ -131,12 +131,16 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+     lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "com.pocketpc"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.11.1"
+        versionName "1.15.9"
     }
     splits {
         abi {

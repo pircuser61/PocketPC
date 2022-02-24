@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, ActivityIndicator} from 'react-native';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const LoadingComponent = () => {
   return (
@@ -13,7 +14,7 @@ const LoadingComponent = () => {
         backgroundColor: 'rgba(0,0,0,0.2)',
         zIndex: 200,
       }}>
-      <ActivityIndicator size={'large'} color={'#313C47'} />
+      <ActivityIndicator size={'large'} color={MAIN_COLOR} />
     </View>
   );
 };

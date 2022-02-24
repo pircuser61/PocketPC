@@ -1,14 +1,19 @@
 import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
-import {ERROR_CONSOLE_LOG, SUCCES_CONSOLE_LOG} from '../constants/funcrions';
+import {
+  createXMLByObject,
+  ERROR_CONSOLE_LOG,
+  SUCCES_CONSOLE_LOG,
+} from '../constants/funcrions';
 
-export async function PocketPalPlaceGet(
+export async function PocketPalPlaceGet({
   NumPal = '',
   CodShop = '',
+  SkipShop = 'false',
   UID = '',
   City = '',
-) {
+}) {
   return new Promise((success, fail) => {
     try {
       const soapRequest = new SoapRequest({});
@@ -19,22 +24,13 @@ export async function PocketPalPlaceGet(
         requestURL: uri + '/ws_gate' + City + '/ws_gate',
       });
 
-      const reqstr =
-        '<?xml version="1.0" encoding="utf-8" ?>' +
-        '<PocketPalPlaceGet>' +
-        '<City>' +
-        City +
-        '</City>' +
-        '<UID>' +
-        UID +
-        '</UID>' +
-        '<NumPal>' +
-        NumPal +
-        '</NumPal>' +
-        '<CodShop>' +
-        CodShop +
-        '</CodShop>' +
-        '</PocketPalPlaceGet>';
+      const reqstr = createXMLByObject('PocketPalPlaceGet', {
+        City,
+        UID,
+        NumPal,
+        CodShop,
+        SkipShop,
+      });
 
       soapRequest.createRequest({
         'urn:ws_gate': {
@@ -62,7 +58,7 @@ export async function PocketPalPlaceGet(
       soapRequest
         .sendRequest()
         .then(response => {
-          !response ? fail('Пришел пустой ответ') : null;
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {

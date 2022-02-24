@@ -11,6 +11,19 @@ import {DeviceEventEmitter} from 'react-native';
 import {sendCommand} from './constants/funcrions';
 import SplashScreen from 'react-native-splash-screen';
 import {Provider as PaperProvider} from 'react-native-paper';
+import 'react-native-reanimated';
+import {LogBox} from 'react-native';
+import {NativeBaseProvider, Box} from 'native-base';
+import 'react-native-screens';
+import {enableFreeze, enableScreens} from 'react-native-screens';
+
+enableFreeze(true);
+enableScreens(true);
+
+//@react-navigation/native-stack
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 const Stack = createNativeStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -131,7 +144,7 @@ const App = () => {
   };
 
   const datawedge65 = () => {
-    console.log('Datawedge 6.5 APIs are available');
+    //console.log('Datawedge 6.5 APIs are available');
   };
 
   useEffect(() => {
@@ -151,11 +164,13 @@ const App = () => {
   }, []);
 
   return (
-    <PaperProvider>
-      <Provider store={store}>
-        <MainStackNav />
-      </Provider>
-    </PaperProvider>
+    <NativeBaseProvider>
+      <PaperProvider>
+        <Provider store={store}>
+          <MainStackNav />
+        </Provider>
+      </PaperProvider>
+    </NativeBaseProvider>
   );
 };
 

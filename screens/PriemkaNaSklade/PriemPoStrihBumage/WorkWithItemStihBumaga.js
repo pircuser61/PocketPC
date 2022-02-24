@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Pressable,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import HeaderPriemka from '../../../components/PriemkaNaSklade/Header';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -20,6 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import BotNavigation from '../PriemMestnyh/BotNavigation';
 import {
   alertActions,
+  MAIN_COLOR,
   TOGGLE_SCANNING,
   _strSPLITANDCOMPARE,
 } from '../../../constants/funcrions';
@@ -35,6 +37,7 @@ import LoadingComponent from '../../../components/PriemPoStrihBumage/LoadingComp
 
 const WorkWithItemStihBumaga = observer(props => {
   const {navigation, route, user} = props;
+  const [unknownItem, setunknownItem] = useState(false);
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState({
     BarCod: '',
@@ -77,7 +80,7 @@ const WorkWithItemStihBumaga = observer(props => {
 
   useEffect(() => {
     if (barcode.data) {
-      if (!articool) {
+      if (!articool || !item.CodGood) {
         setArticool(barcode.data);
         GetInfoAboutCodGood(barcode.data);
       } else {
@@ -225,8 +228,26 @@ const WorkWithItemStihBumaga = observer(props => {
       .catch(e => {
         console.log(e);
         setLoading(false);
-
-        alert(e);
+        if (typeof e === 'string') {
+          if (
+            e.toLocaleLowerCase().replaceAll(' ', '').includes('баркодненайден')
+          ) {
+            Alert.alert('Внимание!', 'Баркод не найден', [
+              {
+                text: 'Отмена',
+                onPress: () => {},
+                style: 'cancel',
+              },
+              {
+                text: 'Все равно принять',
+                onPress: () => {
+                  saveItemInTradeSystem(red);
+                },
+                style: 'default',
+              },
+            ]);
+          } else Alert.alert('Ошибка', e);
+        }
       });
   };
 
@@ -248,10 +269,11 @@ const WorkWithItemStihBumaga = observer(props => {
           CodGood: art,
         });
         setDOP('');
-        setLoading(false);
       })
       .catch(e => {
-        alert(e);
+        Alert.alert('Ошибка!', e);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -454,19 +476,19 @@ const WorkWithItemStihBumaga = observer(props => {
           height: 48,
           justifyContent: 'center',
           zIndex: 100,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           width: '100%',
         }}
         onPress={() => {
           {
-            articool === item.CodGood
+            articool === item.CodGood && item.CodGood !== ''
               ? checkCurrentArticoolWithTSCodGood()
               : GetInfoAboutCodGood(articool);
           }
         }}>
         <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>
-          {articool === item.CodGood
+          {articool === item.CodGood && articool.replaceAll(' ', '') != ''
             ? item.IdNum
               ? 'Изменить товар'
               : 'Добавить товар'

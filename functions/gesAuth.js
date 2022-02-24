@@ -2,30 +2,7 @@ import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
 import DeviceInfo from 'react-native-device-info';
-
-function isEmpty(e) {
-  if (typeof e == 'undefined') return true;
-  switch (e) {
-    case '':
-    case 0:
-    case '0':
-    case null:
-    case false:
-      return true;
-    default:
-      return false;
-  }
-}
-
-function isNull(e) {
-  if (typeof e == 'undefined') return true;
-  switch (e) {
-    case null:
-      return true;
-    default:
-      return false;
-  }
-}
+import {createXMLByObject} from '../constants/funcrions';
 
 export async function gesAuth(
   login = '',
@@ -43,45 +20,56 @@ export async function gesAuth(
         requestURL: uri + '/ws_gate' + city + '/ws_gate',
       });
 
+      const req = createXMLByObject(
+        'GetAccessToken4User ' +
+          'UserUID="' +
+          login +
+          '" ' +
+          'CityUser="' +
+          city +
+          '" ' +
+          'UserHash="' +
+          password +
+          '" ' +
+          'deviceID="' +
+          DeviceInfo.getDeviceId() +
+          '" ' +
+          `deviceName="${hostName}" ` +
+          'typeOS="' +
+          'Android' +
+          '" ' +
+          'VersionSoft="' +
+          DeviceInfo.getVersion() +
+          '" ' +
+          'moduleSoft="pocketpc" ',
+      );
+
       soapRequest.createRequest({
         'urn:ws_gate': {
           gate2prog: 'GetAccessToken4User,mobileGes',
-          param4prog:
-            '<?xml version="1.0" encoding="utf-8" ?>' +
-            '<GetAccessToken4User ' +
-            'UserUID="' +
-            login +
-            '" ' +
-            'CityUser="' +
-            city +
-            '" ' +
-            'UserHash="' +
-            password +
-            '" ' +
-            'deviceID="' +
-            '' +
-            '" ' +
-            `deviceName="${hostName}" ` +
-            'typeOS="' +
-            'Android' +
-            '" ' +
-            'VersionSoft="' +
-            DeviceInfo.getVersion() +
-            '" ' +
-            'moduleSoft="pocketpc" ' +
-            'addPermit4Proc="maxstore.p" ' +
-            '>' +
-            '</GetAccessToken4User>',
+          param4prog: req,
           wantDbTo: 'ges-local',
         },
       });
 
-      console.log(soapRequest.xmlRequest);
+      console.log(
+        '\x1b[36m',
+        `\n<----------------------------------------------------------------------->
+            Начинается запрос в функции gesAuth ( Вход в систему )
+            По адресу:${soapRequest.requestURL}
+            C параметрами:
+            ${req}
+            `,
+
+        '\x1b[0m',
+      );
+
+      soapRequest.timeout = 10000;
       soapRequest
         .sendRequest()
         .then(response => {
-          if (!response || isNull(response)) {
-            fail('Пришел пустой ответ');
+          if (!response) {
+            fail('Ответ от сервера не пришел');
           }
 
           // console.log(response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0])

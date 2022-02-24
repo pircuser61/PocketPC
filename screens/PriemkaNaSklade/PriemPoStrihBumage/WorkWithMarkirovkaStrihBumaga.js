@@ -24,6 +24,7 @@ import {AddMarkList} from '../../../functions/AddMarkList';
 import {toUTF8Array} from '../../../functions/checkTypes';
 import {MarkHonestAdd} from '../../../functions/MarkHonestAddNew';
 import LoadingComponent from '../../../components/PriemPoStrihBumage/LoadingComponent';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 
 const {width} = Dimensions.get('window');
 
@@ -145,20 +146,17 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
   const _obrabotkaDataMatrix = datamatrix => {
     const {data = '', type = '', time = ''} = datamatrix;
     if (data) {
-      if (type === 'LABEL-TYPE-CODE128') {
+      if (type === 'LABEL-TYPE-CODE128' || type === 'LABEL-TYPE-EAN128') {
         if (
-          (data.slice(0, 2) === '00' ||
-            (data.slice(1, 3) === '00' &&
-              data[0] === '(' &&
-              data[3] === ')')) &&
-          data.length >= 18
+          data.slice(0, 2) === '00' ||
+          (data.slice(1, 3) === '00' && data[0] === '(' && data[3] === ')')
         ) {
           AddUpakKM(data.replace(/\D+/g, '').replace(/^.{2}/, ''));
-        }
-      }
-
-      if (type === 'LABEL-TYPE-DATAMATRIX') {
-        console.log(data);
+        } else
+          alert(
+            `Упаковочный код не удовлетворяет условиям!\n\nСканировано: ${data}`,
+          );
+      } else if (type === 'LABEL-TYPE-DATAMATRIX') {
         if (
           data.slice(0, 2) === '01' &&
           data.slice(16, 18) === '21' &&
@@ -167,7 +165,7 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
           // console.log(data.slice(0,31));
           // let gtin = data.slice(2, 16);
           // let serial = data.slice(18, 31);
-
+          console.log(data);
           setModalVisible(true);
           MarkHonestAdd(
             NakladNayaStore.nakladnayaInfo.IdNum,
@@ -186,7 +184,12 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
               setModalVisible(false);
               UpdateList();
             });
-        }
+        } else
+          alert(
+            `Код маркировки не удовлетворяет условиям!\n\nСканировано: ${data}`,
+          );
+      } else {
+        alert(`Неподходящий тип баркода: ${type}\n\nСканировано: ${data}`);
       }
     }
   };
@@ -218,8 +221,7 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
           style={{}}
         />
         <Text style={{marginLeft: 16, maxWidth: '80%'}}>
-          Для удаления кодов маркировки нажимите на соответствующий Gtin и
-          Serial
+          Для удаления кодов маркировки нажмите на соответствующий Gtin и Serial
         </Text>
         <TouchableOpacity
           onPress={() => {
@@ -275,7 +277,7 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
           height: 48,
           justifyContent: 'center',
           zIndex: 100,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,

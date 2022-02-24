@@ -23,10 +23,12 @@ import BotNavigation from './BotNavigation';
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
 import {
   alertActions,
+  SCREEN_HEIGHT,
   TOGGLE_SCANNING,
   wait,
 } from '../../../constants/funcrions';
 import {connect} from 'react-redux';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const WorkWithItemsInPallete = ({navigation, route, user}) => {
   let mounted = true;
@@ -169,7 +171,7 @@ const WorkWithItemsInPallete = ({navigation, route, user}) => {
                 <View
                   style={[styles.filter, {borderEndWidth: 1, width: '60%'}]}>
                   <Text style={[styles.inTouchText, {textAlign: 'center'}]}>
-                    {r.$.BarCod ? r.$.BarCod : '-'}
+                    {r.$.BarCod ? r.$.BarCod : '---'}
                   </Text>
                 </View>
 
@@ -180,14 +182,23 @@ const WorkWithItemsInPallete = ({navigation, route, user}) => {
             );
           })
         ) : checked ? (
-          <Text
+          <View
             style={{
               alignSelf: 'center',
-              marginVertical: 16,
-              fontWeight: 'bold',
+              opacity: 0.5,
+              height: SCREEN_HEIGHT * 0.6,
+
+              justifyContent: 'center',
             }}>
-            Пусто
-          </Text>
+            <MaterialCommunityIcons
+              name={'format-list-bulleted'}
+              style={{alignSelf: 'center'}}
+              size={30}
+            />
+            <Text style={{fontSize: 14, alignSelf: 'center', margin: 2}}>
+              Список пуст
+            </Text>
+          </View>
         ) : (
           <ActivityIndicator style={{marginTop: 140}} color="#313C47" />
         )}

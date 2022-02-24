@@ -73,7 +73,7 @@ const StartBackToPostavshik = observer(props => {
           iconName={'information-outline'}
           onIconPress={TOGGLE_SCANNING}
           value={BackToPostavshikStore.documentNumber}
-          onSubmit={() => {}}
+          onSubmit={getDocInfoInComp}
           setValue={txt => (BackToPostavshikStore.documentNumber = txt)}
           onChangeText={() => {
             //PerepalechivanieStore.parrentId = '';

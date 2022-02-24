@@ -25,6 +25,7 @@ import NakladNayaStore from '../../../mobx/NakladNayaStore';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Title} from 'react-native-paper';
 import {PocketPrPda1sOb} from '../../../functions/PocketPrPda1sOb';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 
 const styles = StyleSheet.create({
   textTitle: {
@@ -209,7 +210,7 @@ const ChooseOBScreen = observer(({navigation, user}) => {
           height: 48,
           justifyContent: 'center',
           zIndex: 100,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,

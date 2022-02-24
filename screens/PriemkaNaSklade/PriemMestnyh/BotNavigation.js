@@ -15,6 +15,7 @@ import {
   Image,
   Vibration,
 } from 'react-native';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 
 const BotNavigation = ({
   leftName = '',
@@ -69,7 +70,7 @@ const BotNavigation = ({
             width: '50%',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#313C47',
+            backgroundColor: MAIN_COLOR,
             height: 56,
             borderTopEndRadius: 0,
             borderTopStartRadius: 0,

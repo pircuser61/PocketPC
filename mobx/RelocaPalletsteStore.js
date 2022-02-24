@@ -1,21 +1,7 @@
 import {autorun, makeAutoObservable, when} from 'mobx';
 import {configure} from 'mobx';
 import {alertActions} from '../constants/funcrions';
-
-const palletInfoModel = {
-  CodDep: '',
-  CodFirm: '',
-  CodOb: '',
-  CodShop: '',
-  Comment: '',
-  Floor: '',
-  NameFirm: '',
-  NumPal: '',
-  Place: '',
-  Rack: '',
-  Sector: '',
-  ready: false,
-};
+import {palletInfoModel} from '../functions/checkTypes';
 
 configure({
   enforceActions: 'never',

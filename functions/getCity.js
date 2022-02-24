@@ -1,6 +1,8 @@
 import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
+import {getDeviceId} from 'react-native-device-info';
+import {createXMLByObject} from '../constants/funcrions';
 
 function isEmpty(e) {
   if (typeof e == 'undefined') return true;
@@ -34,33 +36,29 @@ export async function getCity(device, url) {
         targetNamespace: 'urn:gestori-gate:ws_gate',
         targetPrefix: 'urn',
         SoapAction: '',
-        requestURL: uri + '/ws_gate1/ws_gate',
+        requestURL: uri + '/ws_gate8/ws_gate',
       });
-
-      console.log(
-        'log' + 'Start ws request for getCity to ' + soapRequest.requestURL,
+      const req = createXMLByObject(
+        'GetCity ' +
+          'deviceID="' +
+          getDeviceId() +
+          '" ' +
+          'deviceName="' +
+          'GetCitiesList' +
+          '" ' +
+          'typeOS="' +
+          'Android' +
+          '" ' +
+          'versionSoft="' +
+          '1.0' +
+          '" ' +
+          'moduleSoft="pocketpc" ',
       );
+
       soapRequest.createRequest({
         'urn:ws_gate': {
           gate2prog: 'GetAvailCityShops,mobileGes',
-          param4prog:
-            '<?xml version="1.0" encoding="utf-8" ?>' +
-            '<GetCity ' +
-            'deviceID="' +
-            'GetCitiesList' +
-            '" ' +
-            'deviceName="' +
-            'GetCitiesList' +
-            '" ' +
-            'typeOS="' +
-            'Android' +
-            '" ' +
-            'versionSoft="' +
-            '1.0' +
-            '" ' +
-            'moduleSoft="pocketpc" ' +
-            '>' +
-            '</GetAccessToken4User>',
+          param4prog: req,
           wantDbTo: 'ges-local',
         },
       });

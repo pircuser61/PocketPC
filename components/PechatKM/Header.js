@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Text, View} from 'react-native';
 import {Appbar, IconButton, TouchableRipple} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const Header = ({
   reload,
@@ -14,7 +15,7 @@ const Header = ({
   return (
     <View
       style={{
-        backgroundColor: '#313C47',
+        backgroundColor: MAIN_COLOR,
         justifyContent: 'center',
         height: 60,
       }}>

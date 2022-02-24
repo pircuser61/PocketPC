@@ -26,7 +26,12 @@ const menuItems = [
     navName: 'PerepalechivanieStackNav',
   },
   {title: 'Проверка перепалечивания', id: '4', ready: false},
-  {title: 'Проверка палетт', id: '5', ready: false},
+  {
+    title: 'Проверка палетт',
+    id: '5',
+    ready: true,
+    navName: 'CheckPattlesNaSklade',
+  },
   {title: 'Прием перед.накладных', id: '6', ready: false},
   {title: 'ТТН', id: '7', ready: false},
   {title: 'Проверка ВГХ', id: '8', ready: false},
@@ -36,11 +41,17 @@ const menuItems = [
     ready: true,
     navName: 'BackToPostavshikNav',
   },
+  {
+    id: '10',
+    navName: 'CrossDockingNav',
+    ready: true,
+    title: 'Кросс-докинг',
+  },
   // {
   //   title: 'Тестовый экран',
   //   id: '10',
   //   ready: true,
-  //   navName: 'TestScreen',
+  //   navName: 'GetBarcodeInfoScreen',
   // },
 ].sort((a, b) => b.ready - a.ready || a.id - b.id);
 
@@ -57,6 +68,7 @@ const MenuPriemki = ({navigation}) => {
   return (
     <View style={{flex: 1}}>
       <HeaderPriemka navigation={navigation} />
+
       {render ? (
         <FlatList
           data={menuItems}

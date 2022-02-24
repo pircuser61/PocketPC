@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const NewInputCard = observer(
   ({
@@ -64,7 +65,7 @@ const NewInputCard = observer(
             disabled={!iconName ? false : true}>
             {iconName ? (
               loading ? (
-                <ActivityIndicator color={'#313C47'} />
+                <ActivityIndicator color={MAIN_COLOR} />
               ) : (
                 <MaterialCommunityIcons name={iconName} size={24} />
               )

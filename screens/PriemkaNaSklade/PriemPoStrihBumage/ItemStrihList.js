@@ -24,6 +24,7 @@ import {PocketPrPda4s} from '../../../functions/PocketPrPda4s';
 import NakladNayaStore from '../../../mobx/NakladNayaStore';
 import BotNavigation from '../PriemMestnyh/BotNavigation';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 const ViewTypes = {
   FULL: 0,
   HALF_LEFT: 1,
@@ -257,7 +258,7 @@ const ItemStrihList = observer(props => {
           height: 48,
           justifyContent: 'center',
           zIndex: 1000,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   item: {
-    backgroundColor: '#313C47',
+    backgroundColor: MAIN_COLOR,
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,

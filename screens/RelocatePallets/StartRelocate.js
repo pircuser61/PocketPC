@@ -24,6 +24,7 @@ import RelocateModal from '../../components/RelocatePallets/RelocateModal';
 import {useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Header from '../../components/PechatKM/Header';
+import {palletInfoModel} from '../../functions/checkTypes';
 
 const StartRelocate = observer(props => {
   const api = PriemMestnyhHook();
@@ -33,18 +34,22 @@ const StartRelocate = observer(props => {
   const {user, navigation, podrazd} = props;
   const [visible, setVisible] = useState(false);
 
-  const getPalletLocationInfo = data => {
+  const getPalletLocationInfo = (data, needNavigate = true) => {
+    Keyboard.dismiss();
     RelocaPalletsteStore.loadingPalletInfo = true;
-    PocketPalPlaceGet(
-      data,
-      podrazd.Id,
-      user.user.TokenData[0].$.UserUID,
-      user.user.$['city.cod'],
-    )
+    PocketPalPlaceGet({
+      NumPal: data,
+      CodShop: podrazd.Id,
+      UID: user.user.TokenData[0].$.UserUID,
+      City: user.user.$['city.cod'],
+    })
       .then(r => {
         console.log(r);
         RelocaPalletsteStore.fullPalletInfo = r;
         RelocaPalletsteStore.loadingPalletInfo = false;
+        if (needNavigate) {
+          navigation.navigate('ChangeLocation');
+        }
       })
       .catch(e => {
         alertActions(e);
@@ -53,7 +58,7 @@ const StartRelocate = observer(props => {
   };
 
   useEffect(() => {
-    if (barcode.data && !RelocaPalletsteStore.fullPalletInfo.ready) {
+    if (barcode.data) {
       RelocaPalletsteStore.palletNumber = barcode.data;
       getPalletLocationInfo(barcode.data);
       setBarcode({data: '', time: '', type: ''});
@@ -70,7 +75,7 @@ const StartRelocate = observer(props => {
   useFocusEffect(
     React.useCallback(() => {
       if (RelocaPalletsteStore.palletNumber)
-        getPalletLocationInfo(RelocaPalletsteStore.palletNumber);
+        getPalletLocationInfo(RelocaPalletsteStore.palletNumber, false);
     }, []),
   );
 
@@ -105,9 +110,11 @@ const StartRelocate = observer(props => {
           setValue={txt => (RelocaPalletsteStore.palletNumber = txt)}
           onChangeText={() => {
             //PerepalechivanieStore.parrentId = '';
+            RelocaPalletsteStore.fullPalletInfo = palletInfoModel;
           }}
           loading={RelocaPalletsteStore.loadingPalletInfo}
-          isTextInput={RelocaPalletsteStore.fullPalletInfo.ready ? false : true}
+          //isTextInput={RelocaPalletsteStore.fullPalletInfo.ready ? false : true}
+          isTextInput={true}
           iconName={
             RelocaPalletsteStore.palletNumber
               ? RelocaPalletsteStore.fullPalletInfo.ready

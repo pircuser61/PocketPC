@@ -26,7 +26,8 @@ import {setPalletsListInPriemMestnyhTHUNK} from '../../../redux/reducer';
 import {useFocusEffect} from '@react-navigation/native';
 import BotNavigation from './BotNavigation';
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
-import {TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {alertActions, TOGGLE_SCANNING} from '../../../constants/funcrions';
+import InputField from '../../../components/Perepalechivanie/InputField';
 
 const WorkWithPallete = ({
   navigation,
@@ -70,30 +71,35 @@ const WorkWithPallete = ({
           accept={true}
         />
         <View style={{flex: 1}}>
-          <Text style={{fontSize: 20, margin: 16}}>Введите номер паллеты:</Text>
-          <View style={{justifyContent: 'center'}}>
-            <TextInput
-              ref={_podrRef}
-              style={{
-                height: 56,
-                borderColor: 'gray',
-                borderWidth: 1,
-                marginLeft: 16,
-                marginRight: 70,
-                backgroundColor: '#D1D1D1',
-                paddingLeft: 16,
-                borderRadius: 4,
-              }}
-              keyboardType="numeric"
-              onChangeText={text => setPalletNumber(text)}
-              value={palletNumber}
-            />
-            <TouchableOpacity
-              style={{position: 'absolute', right: 4, padding: 20}}
-              onPress={TOGGLE_SCANNING}>
-              <MaterialCommunityIcons name="barcode-scan" size={28} />
-            </TouchableOpacity>
-          </View>
+          <InputField
+            innerRef={_podrRef}
+            placeholder={'Введите номер паллеты'}
+            value={palletNumber}
+            keyboardType="numeric"
+            onSubmit={() => {
+              if (!palletNumber) {
+                alertActions('Не указан номер паллеты');
+                return;
+              }
+              let current = new Date();
+              setPalletsListInPriemMestnyhTHUNK([
+                {data: palletNumber, time: current.toLocaleTimeString()},
+                ...palletsInWork,
+              ]);
+              navigation.navigate('WorkWithItemsInPallete', {
+                ...route.params,
+                palletNumber: palletNumber,
+              });
+            }}
+            isTextInput={true}
+            iconName={'barcode-scan'}
+            onIconPress={TOGGLE_SCANNING}
+            title={'Номер паллеты'}
+            setValue={txt => {
+              setPalletNumber(txt);
+            }}
+          />
+
           <Divider style={{marginVertical: 16}} />
           <View
             style={{
@@ -108,7 +114,9 @@ const WorkWithPallete = ({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{fontSize: 16}}>Дата обращения</Text>
+              <Text style={{fontSize: 14, fontWeight: 'bold'}}>
+                Дата обращения
+              </Text>
             </View>
             <View
               style={{
@@ -116,7 +124,9 @@ const WorkWithPallete = ({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{fontSize: 16}}>Номер паллеты</Text>
+              <Text style={{fontSize: 14, fontWeight: 'bold'}}>
+                Номер паллеты
+              </Text>
             </View>
           </View>
           <Divider />
@@ -193,8 +203,11 @@ const WorkWithPallete = ({
           rightName={'Далее'}
           leftOnPress={TOGGLE_SCANNING}
           rightOnPress={() => {
+            if (!palletNumber) {
+              alertActions('Не указан номер паллеты');
+              return;
+            }
             let current = new Date();
-
             setPalletsListInPriemMestnyhTHUNK([
               {data: palletNumber, time: current.toLocaleTimeString()},
               ...palletsInWork,
@@ -263,3 +276,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+/**
+ *   <Text style={{fontSize: 20, margin: 16}}>Введите номер паллеты:</Text>
+          <View style={{justifyContent: 'center'}}>
+            <TextInput
+              ref={_podrRef}
+              style={{
+                height: 56,
+                borderColor: 'gray',
+                borderWidth: 1,
+                marginLeft: 16,
+                marginRight: 70,
+                backgroundColor: '#D1D1D1',
+                paddingLeft: 16,
+                borderRadius: 4,
+              }}
+              keyboardType="numeric"
+              onChangeText={text => setPalletNumber(text)}
+              value={palletNumber}
+            />
+            <TouchableOpacity
+              style={{position: 'absolute', right: 4, padding: 20}}
+              onPress={TOGGLE_SCANNING}>
+              <MaterialCommunityIcons name="barcode-scan" size={28} />
+            </TouchableOpacity>
+          </View>
+ */

@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const ScanCard = ({TOGGLE_SCANNING, scannedData, barcodeInfo}) => {
   return (
@@ -29,7 +30,7 @@ const ScanCard = ({TOGGLE_SCANNING, scannedData, barcodeInfo}) => {
           styles.card,
           {
             backgroundColor:
-              barcodeInfo.CodGood.length > 0 ? 'white' : '#313C47',
+              barcodeInfo.CodGood.length > 0 ? 'white' : MAIN_COLOR,
           },
         ]}>
         <View style={{maxWidth: 200}}>

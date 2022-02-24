@@ -1,21 +1,37 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View, Button} from 'react-native';
 import {Appbar, Text} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MAIN_COLOR} from '../constants/funcrions';
 
-const HeaderHomeScreen = (props) => {
-  const {info,user,exitToAuthThunk,navigation,podrazd} = props;
+const HeaderHomeScreen = props => {
+  const {info, user, exitToAuthThunk, navigation, podrazd} = props;
   return (
     <View
-      style={{backgroundColor: '#313C47', height: 140, alignItems: 'center'}}>
-      <View style={{marginVertical: 16}}>
-        <Text style={{fontSize: 20, color: 'white'}}>{podrazd.Name}</Text>
+      style={{backgroundColor: MAIN_COLOR, height: 140, alignItems: 'center'}}>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('GetBarcodeInfoScreen');
+        }}
+        style={{position: 'absolute', right: 16, top: 16}}>
+        <MaterialCommunityIcons
+          style={{alignSelf: 'center'}}
+          name="barcode-scan"
+          size={24}
+          color={'white'}
+        />
+      </TouchableOpacity>
+
+      <View style={{marginVertical: 16, marginHorizontal: 48}}>
+        <Text style={{fontSize: 18, color: 'white'}} numberOfLines={1}>
+          {podrazd.Name}
+        </Text>
       </View>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <TouchableOpacity
-        onPress={()=>{
-          navigation.navigate('ChangeShop')
-        }}
+          onPress={() => {
+            navigation.navigate('ChangeShop');
+          }}
           style={styles.button}>
           <View style={{marginLeft: 16}}>
             <MaterialCommunityIcons
@@ -37,9 +53,7 @@ const HeaderHomeScreen = (props) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-        onPress={exitToAuthThunk}
-          style={styles.button}>
+        <TouchableOpacity onPress={exitToAuthThunk} style={styles.button}>
           <View style={{marginLeft: 16}}>
             <MaterialCommunityIcons
               style={{

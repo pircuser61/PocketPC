@@ -14,7 +14,7 @@ import HeaderPriemka from '../../../components/PriemkaNaSklade/Header';
 import NakladNayaStore from '../../../mobx/NakladNayaStore';
 import {Searchbar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {MAIN_COLOR, TOGGLE_SCANNING} from '../../../constants/funcrions';
 import {useState} from 'react';
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
 import {connect} from 'react-redux';
@@ -102,7 +102,7 @@ const EnterPalletsNamesToNakladnaya = observer(({navigation, user}) => {
           height: 48,
           justifyContent: 'center',
           zIndex: 1000,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,

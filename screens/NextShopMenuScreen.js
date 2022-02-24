@@ -1,3 +1,4 @@
+import {observer} from 'mobx-react-lite';
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
@@ -10,9 +11,10 @@ import {Divider} from 'react-native-paper';
 import {connect} from 'react-redux';
 import HeaderForChooseShop from '../components/HeaderForChooseShop';
 import {PocketAvailShops} from '../functions/PocketAvailShops';
+import UserStore from '../mobx/UserStore';
 import {setPodrazdThunk, exitToAuthThunk} from '../redux/reducer';
 
-const NextShopMenu = React.memo(
+const NextShopMenu = observer(
   ({route, navigation, setPodrazdThunk, exitToAuthThunk, podrazd}) => {
     const {OPshop} = route.params;
     let isGroup = false;
@@ -21,6 +23,11 @@ const NextShopMenu = React.memo(
     }
 
     const [render, startRender] = useState(false);
+
+    function makeActionWithPodrazd(value) {
+      setPodrazdThunk(value);
+      UserStore.podrazd = value;
+    }
 
     useEffect(() => {
       setTimeout(() => startRender(true), 100);
@@ -43,20 +50,20 @@ const NextShopMenu = React.memo(
                   typeof item['Shop'] === 'object' &&
                   item['Shop'].length === 1
                 ) {
-                  setPodrazdThunk(item['Shop'][0].$);
+                  makeActionWithPodrazd(item['Shop'][0].$);
                 } else navigation.push('Details', {OPshop: item});
-              } else setPodrazdThunk(item.$);
+              } else makeActionWithPodrazd(item.$);
             } else {
               if (isGroup) {
                 if (
                   typeof item['Shop'] === 'object' &&
                   item['Shop'].length === 1
                 ) {
-                  setPodrazdThunk(item['Shop'][0].$);
+                  makeActionWithPodrazd(item['Shop'][0].$);
                   navigation.popToTop();
                 } else navigation.push('NextChangeShop', {OPshop: item});
               } else {
-                setPodrazdThunk(item.$);
+                makeActionWithPodrazd(item.$);
                 navigation.popToTop();
               }
             }
@@ -93,11 +100,15 @@ const NextShopMenu = React.memo(
           exitToAuthThunk={exitToAuthThunk}
         />
         {render ? (
-          <FlatList
-            data={OPshop.Shop || OPshop.Group}
-            renderItem={renderItem}
-            keyExtractor={item => item['$']['Id']}
-          />
+          OPshop.Shop || OPshop.Group ? (
+            <FlatList
+              data={OPshop.Shop || OPshop.Group}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => item['$']['Id'] + index}
+            />
+          ) : (
+            <Text>Нет доступа</Text>
+          )
         ) : null}
       </View>
     );

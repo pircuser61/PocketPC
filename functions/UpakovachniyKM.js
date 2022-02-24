@@ -54,7 +54,7 @@ export async function UpakovachniyKM(codGood = '') {
       soapRequest
         .sendRequest()
         .then(response => {
-          response ? null : fail('Пришел пустой ответ');
+          response ? null : fail('Ответ от сервера не пришел');
 
           let responseXML =
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0][

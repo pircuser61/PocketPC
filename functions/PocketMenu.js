@@ -1,6 +1,7 @@
 import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
+import {createXMLByObject} from '../constants/funcrions';
 
 export async function PocketMenu(City = '', Shop = '', UID = '') {
   return new Promise((success, fail) => {
@@ -10,20 +11,22 @@ export async function PocketMenu(City = '', Shop = '', UID = '') {
         targetNamespace: 'urn:gestori-gate:ws_gate',
         targetPrefix: 'urn',
         SoapAction: '',
-        requestURL: uri + '/ws_gate'+City+'/ws_gate',
+        requestURL: uri + '/ws_gate' + City + '/ws_gate',
       });
+
+      let request_body = createXMLByObject('PocketMenu', {
+        City,
+        Shop,
+        UID,
+        Procedure: 'ms_pocket.p',
+      });
+
+      soapRequest.timeout = 10000;
 
       soapRequest.createRequest({
         'urn:ws_gate': {
           gate2prog: 'PocketMenu,mobileGes',
-          param4prog:
-            '<?xml version="1.0" encoding="utf-8" ?>' +
-            '<PocketMenu>' +
-            '<City>'+City+'</City>' +
-            '<Shop>'+Shop+'</Shop>' +
-            '<UID>'+UID+'</UID>' +
-            '<Procedure>ms_pocket.p</Procedure>' +
-            '</PocketMenu>',
+          param4prog: request_body,
           wantDbTo: 'ges-local',
         },
       });
@@ -37,15 +40,18 @@ export async function PocketMenu(City = '', Shop = '', UID = '') {
       Shop: ${Shop}
       UID: ${UID}
       По ссылке: ${soapRequest.requestURL}
-      XML ЗАПРОС В ФУНКЦИИ PocketMenu: \n${soapRequest.xmlRequest}`,'\x1b[0m',);
+      XML ЗАПРОС В ФУНКЦИИ PocketMenu: \n${soapRequest.xmlRequest}`,
+        '\x1b[0m',
+      );
 
       soapRequest
         .sendRequest()
-        .then((response) => {
-          !response ? fail('Пришел пустой ответ') : null;
+        .then(response => {
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {
+            console.log(JSON.stringify(response));
             fail('Ошибка ответа');
           }
           if (
@@ -62,24 +68,30 @@ export async function PocketMenu(City = '', Shop = '', UID = '') {
                 if (
                   typeof responseXMLJS['PocketMenu']['MI'][0]['MI'] === 'object'
                 ) {
-                  console.log('\x1b[32m','Функция PocketMenu отработала нормально\n<----------------------------------------------------------------------->' ,'\x1b[0m');
+                  console.log(
+                    '\x1b[32m',
+                    'Функция PocketMenu отработала нормально\n<----------------------------------------------------------------------->',
+                    '\x1b[0m',
+                  );
 
                   success(responseXMLJS['PocketMenu']['MI'][0]['MI'][0]['MI']);
-                  
-                }
-                else {
-                  console.log('\x1b[32m','Функция PocketMenu отработала нормально\n<----------------------------------------------------------------------->' ,'\x1b[0m');
-                  success([])
+                } else {
+                  console.log(
+                    '\x1b[32m',
+                    'Функция PocketMenu отработала нормально\n<----------------------------------------------------------------------->',
+                    '\x1b[0m',
+                  );
+                  success([]);
                 }
               }
               if (responseXMLJS.PocketMenu.$.Error === 'True') {
-                fail(responseXMLJS.PocketMenu.Error[0])
+                fail(responseXMLJS.PocketMenu.Error[0]);
               }
             });
           }
           fail('Произошла ошибка');
         })
-        .catch((error) => {
+        .catch(error => {
           fail('' + error);
         });
     } catch (error) {

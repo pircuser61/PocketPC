@@ -65,7 +65,7 @@ export async function PocketPrPda2(
       soapRequest
         .sendRequest()
         .then(response => {
-          !response ? fail('Пришел пустой ответ') : null;
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {

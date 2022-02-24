@@ -2,6 +2,8 @@ import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
 import {toUTF8Array} from './checkTypes';
+import X2JS from 'x2js';
+import {convertToXML, x2js} from '../constants/funcrions';
 //http://109.124.66.52:8880
 export async function PocketPrintMarkHonest(
   printer,
@@ -51,8 +53,7 @@ export async function PocketPrintMarkHonest(
             printer +
             '</Printer>' +
             '<QR>' +
-            QR.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
+            convertToXML(QR)
               .split('')
               .map(r => {
                 if (toUTF8Array(r) == 29) {
@@ -87,7 +88,7 @@ export async function PocketPrintMarkHonest(
       soapRequest
         .sendRequest()
         .then(response => {
-          response ? null : fail('Пришел пустой ответ');
+          response ? null : fail('Ответ от сервера не пришел');
           let responseXML =
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0][
               'ns1:ws_gateResponse'
