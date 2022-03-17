@@ -1,6 +1,6 @@
 {
   "name": "PocketPC",
-  "version": "1.15.9",
+  "version": "1.16.1",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",

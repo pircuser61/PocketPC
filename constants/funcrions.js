@@ -45,6 +45,15 @@ export const alertActions = err => {
   Alert.alert('Ошибка!', err + '');
 };
 
+export const alertError = err => {
+  let msg = '';
+  if (err instanceof Error) msg = error.message;
+  else msg = err;
+  Vibration.vibrate(200);
+  RNBeep.beep(false);
+  Alert.alert('Ошибка!', msg);
+};
+
 export let _strSPLITANDCOMPARE = str1 => {
   let newStr1 = '';
   if (str1[2] === '.') {

@@ -53,14 +53,15 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
           //console.log(r);
           if (
             r['$']['Trigger'] === 'm-mh-reprint' ||
-            r['$']['Trigger'] === 'm-prog2' ||
-            r['$']['Trigger'] === 'm-prog12' ||
-            r['$']['Trigger'] === 'm-prog10' ||
-            r['$']['Trigger'] === 'm-prog9' ||
             r['$']['Trigger'] === 'm-prog1' ||
-            r['$']['Trigger'] === 'm-prog14' ||
+            r['$']['Trigger'] === 'm-prog2' ||
             r['$']['Trigger'] === 'm-prog4' ||
-            r['$']['Trigger'] === 'm-prog7'
+            r['$']['Trigger'] === 'm-prog7' ||
+            r['$']['Trigger'] === 'm-prog9' ||
+            r['$']['Trigger'] === 'm-prog10' ||
+            r['$']['Trigger'] === 'm-prog12' ||
+            r['$']['Trigger'] === 'm-prog13' ||
+            r['$']['Trigger'] === 'm-prog14'
 
             //m-prog7
           ) {

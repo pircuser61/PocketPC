@@ -1,0 +1,22 @@
+Поиск по проекту - заменить все вхождения текущей версии;
+Проверить IS_DEV == false;
+
+Билдим .apk: 
+    cd <project_folder>/android;
+    gradlew clean  -- Чистит кэш;
+    gradlew bundleRelease  -- получаем .aab файл;
+    npx react-native run-android --variant=release   -- получаем .apk файл; 
+
+    готовые .apk лежат в 
+        <project_folder>\android\app\build\outputs\apk\release
+        нужен app-armeabi-v7a-***.apk
+        
+Заливаем на сервер appstore.maxidom.ru:
+
+    имя файла меняем согласно версии
+    файл заливаем на appstore.maxidom.ru прямо в корень
+
+    там же на сервере лежит файл apps.json кодировка utf-8
+        меняем версию и имя файла apk
+        needback - если нужен даунгрейд
+
