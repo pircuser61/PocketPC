@@ -238,7 +238,7 @@ const WorkWithMarkirovkaStrihBumaga = observer(props => {
           style={{}}
         />
         <Text style={{marginLeft: 16, maxWidth: '80%'}}>
-          Для удаления кодов маркировки нажимите на соответствующий Gtin и
+          Для удаления кодов маркировки нажмите на соответствующий Gtin и
           Serial
         </Text>
         <TouchableOpacity

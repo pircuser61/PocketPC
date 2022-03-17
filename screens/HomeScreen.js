@@ -5,6 +5,10 @@ import {
   View,
   Text,
   Vibration,
+  ScrollView,
+  ActivityIndicator,
+  Button,
+  Alert,
 } from 'react-native';
 import RNBeep from 'react-native-a-beep';
 import HeaderHomeScreen from '../components/HeaderHomeScreen';
@@ -13,8 +17,18 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {Divider} from 'react-native-paper';
 import {connect} from 'react-redux';
 import {exitToAuthThunk} from '../redux/reducer';
-import {alertActions} from '../constants/funcrions';
-import {ScrollView} from 'react-native-gesture-handler';
+import {
+  alertActions,
+  MAIN_COLOR,
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+} from '../constants/funcrions';
+
+import {enableFreeze} from 'react-native-screens';
+import {PocketCron} from '../functions/PocketCron';
+import LoadingFlexComponent from '../components/SystemComponents/LoadingFlexComponent';
+
+//enableFreeze(true);
 
 const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
   const [menuList, setMenuList] = useState([]);
@@ -27,7 +41,7 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
     fu();
   }, []);
 
-  const fu = () => {
+  const fu = React.useCallback(() => {
     PocketMenu(
       user['$']['city.cod'],
       podrazd.Id,
@@ -36,10 +50,19 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
       .then(r => {
         const firstMass = [];
         r.map(r => {
+          //console.log(r);
           if (
             r['$']['Trigger'] === 'm-mh-reprint' ||
             r['$']['Trigger'] === 'm-prog2' ||
-            r['$']['Trigger'] === 'm-prog12'
+            r['$']['Trigger'] === 'm-prog12' ||
+            r['$']['Trigger'] === 'm-prog10' ||
+            r['$']['Trigger'] === 'm-prog9' ||
+            r['$']['Trigger'] === 'm-prog1' ||
+            r['$']['Trigger'] === 'm-prog14' ||
+            r['$']['Trigger'] === 'm-prog4' ||
+            r['$']['Trigger'] === 'm-prog7'
+
+            //m-prog7
           ) {
             firstMass.push({...r, ready: true});
           } else {
@@ -58,9 +81,10 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
           '\x1b[0m',
         );
       });
-  };
+  });
 
   useEffect(() => {
+    //navigation.navigate('m-prog10');
     fu();
   }, []);
 
@@ -76,17 +100,37 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
+        {refreshing && menuList.length === 0 && <LoadingFlexComponent />}
         {menuList
           .sort((a, b) => b.ready - a.ready || a.$.Order - b.$.Order)
-
           .map((r, i) => {
-            // console.log(r)
-            //m-mh-reprint
             return (
               <TouchableOpacity
                 disabled={!r.ready}
                 onPress={() => {
-                  navigation.navigate(r['$']['Trigger']);
+                  if (
+                    r['$']['Trigger'] === 'm-prog10' ||
+                    r['$']['Trigger'] === 'm-prog9'
+                  ) {
+                    let params = {Type: '', title: ''};
+                    switch (r['$']['Trigger']) {
+                      case 'm-prog10':
+                        params.Type = '6';
+                        params.title = 'Проверка паллет';
+                        break;
+                      case 'm-prog9':
+                        params.Type = '5';
+                        params.title = 'Проверка планограммы';
+
+                      default:
+                        break;
+                    }
+
+                    navigation.navigate('CheckMenu', params);
+                  } else if (r['$']['Trigger'] === 'm-prog14') {
+                    let params = {Type: '1', title: 'Проверка накладных'};
+                    navigation.navigate('m-prog14', params);
+                  } else navigation.navigate(r['$']['Trigger']);
                   //console.log(r);
                 }}
                 key={i}
@@ -98,11 +142,13 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
                 }}>
                 <Text style={{fontSize: 20}}>{r['$']['Label']}</Text>
                 <Text
+                  numberOfLines={1}
                   style={{
                     fontSize: 14,
                     opacity: 0.6,
                     fontWeight: '400',
                     marginBottom: 10,
+                    marginRight: 32,
                   }}>
                   {podrazd.Name}
                 </Text>

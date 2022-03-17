@@ -13,13 +13,24 @@ import ScannerScreen from '../screens/ScannerScreen';
 import PriemkaNaSkladeNav from './PriemkaNaSkladeNav/PriemkaNaSkladeNav';
 import DeviceInfo from 'react-native-device-info';
 import RelocatePalletsNav from './RelocatePalletsNav/RelocatePalletsNav';
+import GetBarcodeInfoScreen from '../screens/GetBarcodeInfoScreen';
+import ChooseShop from '../screens/ChooseShop';
+import {observer} from 'mobx-react-lite';
+import ShopStore from '../mobx/ShopStore';
+import LoadingScreen from '../screens/LoadingScreen';
+import SandBox from '../screens/SandBox';
+import GlobalCheckNav from './ProverkaPallet/GlodalCheckNav';
+import Inventarization from '../screens/Inventatization';
+import ProverkaNakladnyh from './ProverkaNakladnyh/ProverkaNakladnyhNav';
+import PlanogrammaNav from './Planogramma/PlanogrammaNav';
+import VykladkaNav from './Vykladka/VykladkaNav';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
 
-const MainStackNav = ({user, podrazd}) => {
+const MainStackNav = observer(({user, podrazd}) => {
   useEffect(() => {
-    console.log(DeviceInfo.getVersion());
+    ShopStore.getShopFromAsync();
   }, []);
 
   return (
@@ -34,22 +45,34 @@ const MainStackNav = ({user, podrazd}) => {
             stackAnimation: 'none',
           }}
           headerMode="float">
-          {user ? (
+          {user && ShopStore.shopName.length ? (
             <>
               {podrazd.Name.length > 0 ? (
                 <>
-                  <Stack.Screen name="123" component={HomeScreen} />
+                  <Stack.Screen name="HomeScreen" component={HomeScreen} />
                   <Stack.Screen name="ChangeShop" component={MainShopMenu} />
                   <Stack.Screen
                     name="NextChangeShop"
                     component={NextShopMenu}
                   />
                   <Stack.Screen name="m-mh-reprint" component={ScannerScreen} />
+                  <Stack.Screen name="m-prog1" component={Inventarization} />
                   <Stack.Screen name="m-prog2" component={PriemkaNaSkladeNav} />
+                  <Stack.Screen name="CheckMenu" component={GlobalCheckNav} />
                   <Stack.Screen
                     name="m-prog12"
                     component={RelocatePalletsNav}
                   />
+                  <Stack.Screen
+                    name="GetBarcodeInfoScreen"
+                    component={GetBarcodeInfoScreen}
+                  />
+                  <Stack.Screen
+                    name={'m-prog14'}
+                    component={ProverkaNakladnyh}
+                  />
+                  <Stack.Screen name={'m-prog4'} component={PlanogrammaNav} />
+                  <Stack.Screen name={'m-prog7'} component={VykladkaNav} />
                 </>
               ) : (
                 <>
@@ -58,14 +81,25 @@ const MainStackNav = ({user, podrazd}) => {
                 </>
               )}
             </>
+          ) : !ShopStore.isReady ? (
+            <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
+          ) : ShopStore.shopName.length ? (
+            <>
+              <Stack.Screen name="LoginScreen" component={LoginScreen} />
+              <Stack.Screen
+                name="GetBarcodeInfoScreen"
+                component={GetBarcodeInfoScreen}
+              />
+            </>
           ) : (
-            <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="ChooseShop" component={ChooseShop} />
           )}
+          <Stack.Screen name="SandBox" component={SandBox} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
   );
-};
+});
 
 const mapStateToProps = state => {
   return {

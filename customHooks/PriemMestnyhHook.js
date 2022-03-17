@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import DataWedgeIntents from 'react-native-datawedge-intents';
 import {DeviceEventEmitter} from 'react-native';
-import { useFocusEffect } from '@react-navigation/core';
-
-
+import {useFocusEffect} from '@react-navigation/core';
 
 const PriemMestnyhHook = () => {
-  const [barcode,setBarcode]=useState({data:'',time:'',type:''})
+  const [barcode, setBarcode] = useState({data: '', time: '', type: ''});
 
   const registerBroadcastReceiver = () => {
     DataWedgeIntents.registerBroadcastReceiver({
@@ -18,7 +16,7 @@ const PriemMestnyhHook = () => {
     });
   };
 
-  const broadcastReceiver = (intent) => {
+  const broadcastReceiver = intent => {
     try {
       //console.log('Получено намерение: ' + JSON.stringify(intent));
       if (!intent.hasOwnProperty('RESULT_INFO')) {
@@ -31,21 +29,23 @@ const PriemMestnyhHook = () => {
   };
   //
 
-
-  const barcodeScanned = (scanData) => {
+  const barcodeScanned = scanData => {
     let scannedData = scanData['com.symbol.datawedge.data_string'];
     let scannedType = scanData['com.symbol.datawedge.label_type'];
     let current = new Date();
-    console.log("/"+scannedData.replace(' ','')+'/');
-    setBarcode({data:scannedData,time:current.toLocaleTimeString(),type:scannedType})
+    //console.log('/' + scannedData?.replace(' ', '') + '/');
+    setBarcode({
+      data: scannedData,
+      time: current.toLocaleTimeString(),
+      type: scannedType,
+    });
   };
-
 
   useFocusEffect(
     React.useCallback(() => {
       let deviceEmitterSubscription = DeviceEventEmitter.addListener(
         'datawedge_broadcast_intent',
-        (intent) => {
+        intent => {
           broadcastReceiver(intent);
         },
       );
@@ -57,9 +57,12 @@ const PriemMestnyhHook = () => {
     }, []),
   );
 
-  return {barcode,setBarcode:(item)=>{
-    setBarcode(item)
-  }}
+  return {
+    barcode,
+    setBarcode: item => {
+      setBarcode(item);
+    },
+  };
 };
 
 export default PriemMestnyhHook;

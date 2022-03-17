@@ -6,11 +6,13 @@ import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {connect} from 'react-redux';
 import HeaderPriemka from '../../components/PriemkaNaSklade/Header';
 import MenuPriemki from '../../screens/PriemkaNaSklade/MenuPriemki';
-import TestScreen from '../../screens/TestScreen';
+import GetBarcodeInfoScreen from '../../screens/GetBarcodeInfoScreen';
 import BackToPostavshikNav from './BackToPostavshikNav';
 import PerepalechivanieStackNav from './PerepalechivanieStackNav';
 import PriemMestnyhNav from './PriemMestnyhNav';
 import PriemPoStrihBumageNav from './PriemPoStrihBumageNav';
+import CrossDockingNav from './CrossDockingNav';
+import CheckPattlesNaSklade from './CheckPattlesNaSklade';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
@@ -40,7 +42,15 @@ const PriemkaNaSkladeNav = ({user, podrazd}) => {
         name="BackToPostavshikNav"
         component={BackToPostavshikNav}
       />
-      <Stack.Screen name="TestScreen" component={TestScreen} />
+      <Stack.Screen
+        name="GetBarcodeInfoScreen"
+        component={GetBarcodeInfoScreen}
+      />
+      <Stack.Screen name="CrossDockingNav" component={CrossDockingNav} />
+      <Stack.Screen
+        name="CheckPattlesNaSklade"
+        component={CheckPattlesNaSklade}
+      />
     </Stack.Navigator>
   );
 };

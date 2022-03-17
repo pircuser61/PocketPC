@@ -1,5 +1,6 @@
 import React from 'react';
 import {Keyboard, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const ButtonBot = ({disabled = true, onPress = () => {}, title = ''}) => {
   return (
@@ -9,7 +10,8 @@ const ButtonBot = ({disabled = true, onPress = () => {}, title = ''}) => {
         height: 48,
         justifyContent: 'center',
         zIndex: 100,
-        backgroundColor: '#313C47',
+        opacity: 1,
+        backgroundColor: disabled ? 'darkgrey' : MAIN_COLOR,
         alignItems: 'center',
         position: 'absolute',
         bottom: 0,
@@ -19,7 +21,12 @@ const ButtonBot = ({disabled = true, onPress = () => {}, title = ''}) => {
         Keyboard.dismiss();
         onPress();
       }}>
-      <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>
+      <Text
+        style={{
+          color: disabled ? 'grey' : 'white',
+          fontWeight: 'bold',
+          fontSize: 14,
+        }}>
         {title}
       </Text>
     </TouchableOpacity>

@@ -74,7 +74,7 @@ export async function PocketPalPlaceInf(
       soapRequest
         .sendRequest()
         .then(response => {
-          !response ? fail('Пришел пустой ответ') : null;
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {
@@ -89,6 +89,7 @@ export async function PocketPalPlaceInf(
               response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0][
                 'ns1:ws_gateResponse'
               ][0]['xmlOut'][0]['_'];
+            console.log(responseXML);
             parseString(responseXML, (err, responseXMLJS) => {
               if (responseXMLJS.PocketPalPlaceInf.$.Error === 'False') {
                 SUCCES_CONSOLE_LOG('PocketPalPlaceInf');

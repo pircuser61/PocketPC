@@ -1,6 +1,10 @@
 import {observer} from 'mobx-react-lite';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {alertActions, TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {
+  alertActions,
+  MAIN_COLOR,
+  TOGGLE_SCANNING,
+} from '../../../constants/funcrions';
 import HeaderPriemka from '../../../components/PriemkaNaSklade/Header';
 import NakladNayaStore from '../../../mobx/NakladNayaStore';
 import React, {useEffect, useState, useRef} from 'react';
@@ -24,6 +28,7 @@ import {Divider} from 'react-native-paper';
 import {useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
+import InputField from '../../../components/Perepalechivanie/InputField';
 
 const PriemPoStrihBumage = observer(props => {
   const {navigation, user} = props;
@@ -48,6 +53,7 @@ const PriemPoStrihBumage = observer(props => {
   );
 
   function getPalletInfo(palnum = '') {
+    Keyboard.dismiss();
     NakladNayaStore.loading = true;
     PocketPrPda1s(
       palnum,
@@ -79,37 +85,22 @@ const PriemPoStrihBumage = observer(props => {
           arrow={true}
           title={'Прием по штрих бумаге'}
         />
-        <Text style={{fontSize: 20, margin: 16}}>Введите номер накладной:</Text>
-        <View style={{justifyContent: 'center'}}>
-          <TextInput
-            style={{
-              height: 56,
-              borderColor: 'gray',
-              borderWidth: 1,
-              marginLeft: 16,
-              marginRight: 70,
-              backgroundColor: '#D1D1D1',
-              paddingLeft: 16,
-              borderRadius: 4,
-            }}
-            keyboardType="numeric"
-            onChangeText={text => setNumNakl(text)}
-            value={numNakl}
-            onSubmitEditing={text => getPalletInfo(numNakl)}
-          />
-          <TouchableOpacity
-            style={{position: 'absolute', right: 4, padding: 20}}
-            onPress={TOGGLE_SCANNING}>
-            <MaterialCommunityIcons name="barcode-scan" size={28} />
-          </TouchableOpacity>
-        </View>
 
+        <InputField
+          title={'Номер накладной'}
+          iconName={'barcode-scan'}
+          onIconPress={TOGGLE_SCANNING}
+          value={numNakl}
+          setValue={text => setNumNakl(text)}
+          isTextInput={true}
+          onSubmit={text => getPalletInfo(numNakl)}
+        />
         <TouchableOpacity
           style={{
             height: 48,
             justifyContent: 'center',
             zIndex: 100,
-            backgroundColor: '#313C47',
+            backgroundColor: MAIN_COLOR,
             alignItems: 'center',
             position: 'absolute',
             bottom: 0,

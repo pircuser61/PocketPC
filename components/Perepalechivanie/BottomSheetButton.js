@@ -7,6 +7,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
+import {MAIN_COLOR} from '../../constants/funcrions';
 
 const BottomSheetButton = observer(props => {
   const {title = '', onPress = () => {}, loading = false} = props;
@@ -17,7 +18,7 @@ const BottomSheetButton = observer(props => {
       style={{
         width: '90%',
         height: 54,
-        backgroundColor: '#313C47',
+        backgroundColor: MAIN_COLOR,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 8,

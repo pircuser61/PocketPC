@@ -17,7 +17,11 @@ import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import CardInItems from '../../../components/Perepalechivanie/CardInItems';
 import ListItemComponent from '../../../components/Perepalechivanie/ListItemComponent';
 import HeaderPriemka from '../../../components/PriemkaNaSklade/Header';
-import {alertActions, TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {
+  alertActions,
+  MAIN_COLOR,
+  TOGGLE_SCANNING,
+} from '../../../constants/funcrions';
 import {PocketPerepalPalTo} from '../../../functions/PocketPerepalPalTo';
 import PerepalechivanieStore from '../../../mobx/PerepalechivanieStore';
 import BotNavigation from '../PriemMestnyh/BotNavigation';
@@ -308,7 +312,7 @@ const ItemsListPerepalech = observer(props => {
               width: '90%',
               height: 48,
               alignSelf: 'center',
-              backgroundColor: '#313C47',
+              backgroundColor: MAIN_COLOR,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 8,

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Divider} from 'react-native-paper';
+import {MAIN_COLOR} from '../../constants/funcrions';
 import PerepalechivanieStore from '../../mobx/PerepalechivanieStore';
 
 const ModalForCheckQty = observer(
@@ -164,7 +165,7 @@ const ModalForCheckQty = observer(
                 height: 48,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#313C47',
+                backgroundColor: MAIN_COLOR,
                 borderBottomLeftRadius: 6,
                 borderBottomRightRadius: 6,
               }}>

@@ -1,6 +1,7 @@
 import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
+import {convertToXML} from '../constants/funcrions';
 
 const LISTQR = ["010805193111113821z<NL!:t>'/(d&"];
 
@@ -16,8 +17,7 @@ export async function AddMarkList(
     try {
       let ListArr = '';
       ListQR.map(r => {
-        let str =
-          '<QR>' + r.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</QR>';
+        let str = '<QR>' + convertToXML(r) + '</QR>';
         ListArr = ListArr + str;
       });
 
@@ -78,7 +78,7 @@ export async function AddMarkList(
       soapRequest
         .sendRequest()
         .then(response => {
-          !response ? fail('Пришел пустой ответ') : null;
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {

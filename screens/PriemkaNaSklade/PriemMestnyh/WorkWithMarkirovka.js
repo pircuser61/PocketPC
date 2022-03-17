@@ -24,6 +24,7 @@ import {connect} from 'react-redux';
 import {UpakovachniyKM} from '../../../functions/UpakovachniyKM';
 import {AddMarkList} from '../../../functions/AddMarkList';
 import {DOMParser, XMLSerializer} from 'xmldom';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 var parseXML = require('xml-parse-from-string');
 
 const WorkWithMarkirovka = ({navigation, route, user}) => {
@@ -84,29 +85,23 @@ const WorkWithMarkirovka = ({navigation, route, user}) => {
   const _obrabotkaDataMatrix = datamatrix => {
     const {data = '', type = '', time = ''} = datamatrix;
     if (data) {
-      if (type === 'LABEL-TYPE-CODE128') {
+      console.log(type);
+      if (type === 'LABEL-TYPE-CODE128' || type === 'LABEL-TYPE-EAN128') {
         if (
-          (data.slice(0, 2) === '00' ||
-            (data.slice(1, 3) === '00' &&
-              data[0] === '(' &&
-              data[3] === ')')) &&
-          data.length >= 18
+          data.slice(0, 2) === '00' ||
+          (data.slice(1, 3) === '00' && data[0] === '(' && data[3] === ')')
         ) {
           AddUpakKM(data.replace(/\D+/g, '').replace(/^.{2}/, ''));
-        }
-      }
-
-      if (type === 'LABEL-TYPE-DATAMATRIX') {
-        console.log(data);
+        } else
+          alert(
+            `Упаковочный код не удовлетворяет условиям!\n\nСканировано: ${data}`,
+          );
+      } else if (type === 'LABEL-TYPE-DATAMATRIX') {
         if (
           data.slice(0, 2) === '01' &&
           data.slice(16, 18) === '21' &&
           toUTF8Array(data[31]) == 29
         ) {
-          // console.log(data.slice(0,31));
-          // let gtin = data.slice(2, 16);
-          // let serial = data.slice(18, 31);
-
           setModalVisible(true);
           MarkHonestAdd(
             route.params.ParentId,
@@ -125,7 +120,12 @@ const WorkWithMarkirovka = ({navigation, route, user}) => {
               setModalVisible(false);
               UpdateFields();
             });
-        }
+        } else
+          alert(
+            `Код маркировки не удовлетворяет условиям!\n\nСканировано: ${data}`,
+          );
+      } else {
+        alert(`Неподходящий тип баркода: ${type}\n\nСканировано: ${data}`);
       }
     }
   };
@@ -202,7 +202,7 @@ const WorkWithMarkirovka = ({navigation, route, user}) => {
             style={{}}
           />
           <Text style={{marginLeft: 16, maxWidth: '80%'}}>
-            Для удаления кодов маркировки нажимите на соответствующий Gtin и
+            Для удаления кодов маркировки нажмите на соответствующий Gtin и
             Serial
           </Text>
           <TouchableOpacity
@@ -288,7 +288,7 @@ const WorkWithMarkirovka = ({navigation, route, user}) => {
           height: 48,
           justifyContent: 'center',
           zIndex: 100,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,
@@ -311,7 +311,7 @@ const WorkWithMarkirovka = ({navigation, route, user}) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <ActivityIndicator size="large" color="#313C47" />
+            <ActivityIndicator size="large" color={MAIN_COLOR} />
           </View>
         </View>
       </Modal>

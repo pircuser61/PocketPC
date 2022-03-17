@@ -36,7 +36,7 @@ import ModalChooseNN from '../../../components/PriemkaNaSklade/PriemMestnyh/Moda
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
 import {TextInputMask} from 'react-native-masked-text';
 import {PocketPrPda2Get} from '../../../functions/PocketPrPda2Get';
-import {alertActions} from '../../../constants/funcrions';
+import {alertActions, MAIN_COLOR} from '../../../constants/funcrions';
 import QtyElement from '../../../components/PriemkaNaSklade/PriemMestnyh/QtyElement';
 enableScreens();
 const WorkWithItemScreen = ({navigation, route, user}) => {
@@ -291,7 +291,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
           <ActivityIndicator
             style={{position: 'absolute', alignSelf: 'center', top: 300}}
             size={'large'}
-            color="#313C47"
+            color={MAIN_COLOR}
           />
         ) : null}
         <ModalChooseNN
@@ -585,6 +585,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
                 placeholder="Количество"
                 value={Qty}
                 onChangeText={text => {
+                  console.log(fullInfo);
                   if (text.replace(/\D+/g, '').length > Qty.length) {
                     if (
                       Number(text.replace(/\D+/g, '')) > Number(fullInfo.QtyZak)
@@ -592,9 +593,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
                       alertActions('Указаное кол-во больше, чем в заказе');
                     }
                   }
-                  if (fullInfo.ListUpak) {
-                    setQty(text.replaceAll(',', '.'));
-                  } else setQty(text.replace(/\D+/g, ''));
+                  setQty(text.replaceAll(',', '.'));
                 }}
               />
             </View>
@@ -603,7 +602,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
         <View style={styles.circle}></View>
         <TouchableOpacity
           disabled={!ready}
-          style={[styles.circle, {backgroundColor: ready ? '#313C47' : null}]}
+          style={[styles.circle, {backgroundColor: ready ? MAIN_COLOR : null}]}
           onPress={() => {
             mounted && setReady(false);
             PocketPrPda2Save(
@@ -663,7 +662,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
           <MaterialIcons
             name="add-task"
             size={24}
-            color={ready ? '#f2f2f2' : '#313C47'}
+            color={ready ? '#f2f2f2' : MAIN_COLOR}
           />
         </TouchableOpacity>
       </>

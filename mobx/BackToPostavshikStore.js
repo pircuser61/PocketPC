@@ -17,198 +17,6 @@ const itemInfoModel = {
   },
 };
 
-const AnswerBack = {
-  SpecsType: ['pr2'],
-  MarkType: ['2'],
-  WoMarkLimit: ['0'],
-  Specs: [
-    {
-      SpecsRow: [
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-        {
-          $: {
-            CodGood: '1000577837',
-            GoodQty: '1',
-            MarkQty: '0',
-            Name: 'скатерть 180х150см, арт.01шс55-1к-050303',
-            SpecsId: '5679608791',
-            WoMarkQty: '1',
-          },
-        },
-        {
-          $: {
-            CodGood: '1001187038',
-            GoodQty: '2',
-            MarkQty: '0',
-            Name: 'полотенце вафельное 65х130см оливковое, арт.ПВ-65',
-            SpecsId: '5679608802',
-            WoMarkQty: '2',
-          },
-        },
-      ],
-    },
-  ],
-};
-
 configure({
   enforceActions: 'never',
 });
@@ -226,6 +34,7 @@ class BackToPostavshikStore {
   Filter = {value: '3', name: 'Все товары'};
   itemInfo = itemInfoModel;
   loadingListOfSpecs = false;
+  skipCheck = false;
 
   setDocumentNumber = data => {
     this.documentNumber = data;
@@ -251,6 +60,7 @@ class BackToPostavshikStore {
     this.Filter = {value: '3', name: 'Все товары'};
     this.itemInfo = itemInfoModel;
     this.loadingListOfSpecs = false;
+    this.skipCheck = false;
   };
 
   getSpecsList = (
@@ -262,7 +72,7 @@ class BackToPostavshikStore {
     this.loadingListOfSpecs = true;
     MarkHonestSpecs(this.documentNumber, this.Filter.value, 'vozp', user, city)
       .then(r => {
-        this.specsrow = r.Specs[0].SpecsRow;
+        this.specsrow = r.Specs[0].SpecsRow ?? [];
         action();
         this.loadingListOfSpecs = false;
       })

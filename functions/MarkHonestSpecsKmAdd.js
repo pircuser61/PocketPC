@@ -1,13 +1,20 @@
 import SoapRequest from '../soap-client/soapclient';
 import {parseString} from 'react-native-xml2js';
 import {uri} from '../connectInfo';
-import {ERROR_CONSOLE_LOG, SUCCES_CONSOLE_LOG} from '../constants/funcrions';
+import {
+  convertToXML,
+  ERROR_CONSOLE_LOG,
+  SUCCES_CONSOLE_LOG,
+  x2js,
+} from '../constants/funcrions';
 import {toUTF8Array} from './checkTypes';
+import X2JS from 'x2js';
 
 export async function MarkHonestSpecsKmAdd(
   SpecsId = '',
   QR = '',
   SpecsType = 'vozp2',
+  NaklNum = '',
   UID = '',
   City = '',
 ) {
@@ -33,13 +40,14 @@ export async function MarkHonestSpecsKmAdd(
         '<NaklType>' +
         SpecsType +
         '</NaklType>' +
-        '<NaklNum>81342511</NaklNum>' +
+        '<NaklNum>' +
+        NaklNum +
+        '</NaklNum>' +
         '<SpecsId>' +
         SpecsId +
         '</SpecsId>' +
         '<QR>' +
-        QR.replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
+        convertToXML(QR)
           .split('')
           .map(r => {
             if (toUTF8Array(r) == 29) {
@@ -73,7 +81,7 @@ export async function MarkHonestSpecsKmAdd(
       soapRequest
         .sendRequest()
         .then(response => {
-          !response ? fail('Пришел пустой ответ') : null;
+          !response ? fail('Ответ от сервера не пришел') : null;
           if (
             response['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['SOAP-ENV:Fault']
           ) {
@@ -91,11 +99,11 @@ export async function MarkHonestSpecsKmAdd(
             parseString(responseXML, (err, responseXMLJS) => {
               console.log(JSON.stringify(responseXMLJS));
 
-              if (responseXMLJS.MarkHonestSpecsKmAdd.$.Error === 'False') {
+              if (responseXMLJS?.MarkHonestSpecsKmAdd?.$.Error === 'False') {
                 SUCCES_CONSOLE_LOG('MarkHonestSpecsKmAdd');
                 success(true);
               }
-              if (responseXMLJS.MarkHonestSpecsKmAdd.$.Error === 'True') {
+              if (responseXMLJS?.MarkHonestSpecsKmAdd?.$.Error === 'True') {
                 ERROR_CONSOLE_LOG(
                   'MarkHonestSpecsKmAdd',
                   responseXMLJS.MarkHonestSpecsKmAdd.Error[0],

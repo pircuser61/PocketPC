@@ -25,6 +25,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {PocketListOb} from '../../../functions/PocketListOb';
 import {createRef} from 'react';
+import {MAIN_COLOR} from '../../../constants/funcrions';
 
 const ScreenForWorkWithNakladStrih = observer(({navigation, user}) => {
   const scrl = createRef();
@@ -173,7 +174,7 @@ const ScreenForWorkWithNakladStrih = observer(({navigation, user}) => {
           height: 48,
           justifyContent: 'center',
           zIndex: 1000,
-          backgroundColor: '#313C47',
+          backgroundColor: MAIN_COLOR,
           alignItems: 'center',
           position: 'absolute',
           bottom: 0,

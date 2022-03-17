@@ -148,6 +148,7 @@ const StartPerepalech = observer(props => {
           isTextInput={true}
         />
         <InputField
+          notiplaceholder={'Сканируйте номер паллеты'}
           title={'Паллета откуда'}
           iconName={'map-marker-left-outline'}
           onIconPress={TOGGLE_SCANNING}

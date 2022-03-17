@@ -48,7 +48,7 @@ const BackToPostFilterHook = ({user}) => {
         }
       })
       .catch(e => {
-        alert(e);
+        alertActions(e);
       });
   };
 

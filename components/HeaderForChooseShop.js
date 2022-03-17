@@ -1,39 +1,55 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableRipple} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MAIN_COLOR} from '../constants/funcrions';
 
-const HeaderForChooseShop = ({title, isSecond, navigation,exitToAuthThunk,podrazd}) => {
+const HeaderForChooseShop = ({
+  title,
+  isSecond,
+  navigation,
+  exitToAuthThunk,
+  podrazd = {CodOb: '', GroupID: '', Id: '', Name: ''},
+}) => {
   return (
     <View
       style={{
-        backgroundColor: '#313C47',
+        backgroundColor: MAIN_COLOR,
         justifyContent: 'center',
         height: 60,
       }}>
-         {typeof podrazd!=='undefined' && podrazd.Id.length>0 ? (
-        <MaterialCommunityIcons
+      {typeof podrazd !== 'undefined' && podrazd.Id.length > 0 ? (
+        <TouchableRipple
+          style={{position: 'absolute', left: 0, opacity: 0.94, padding: 16}}
           onPress={() => {
             navigation.goBack();
           }}
-          style={{position: 'absolute', left: 16, opacity: 0.94}}
-          name="home-outline"
-          size={26}
-          color="white"
-        />
+          rippleColor="rgba(0, 0, 0, .32)">
+          <MaterialCommunityIcons name="home-outline" size={26} color="white" />
+        </TouchableRipple>
       ) : null}
+
       {isSecond ? (
-        <MaterialCommunityIcons
+        <TouchableRipple
+          style={{position: 'absolute', left: 0, opacity: 0.94, padding: 16}}
           onPress={() => {
             navigation.goBack();
           }}
-          style={{position: 'absolute', left: 16, opacity: 0.94}}
-          name="arrow-left"
-          size={26}
-          color="white"
-        />
+          rippleColor="rgba(0, 0, 0, .32)">
+          <MaterialCommunityIcons name="arrow-left" size={26} color="white" />
+        </TouchableRipple>
       ) : null}
-      
+
+      {typeof podrazd !== 'undefined' && !podrazd?.Id && !isSecond ? (
+        <TouchableRipple
+          style={{position: 'absolute', right: 0, opacity: 0.94, padding: 16}}
+          onPress={exitToAuthThunk}
+          rippleColor="rgba(0, 0, 0, .32)">
+          <MaterialCommunityIcons name="exit-to-app" size={26} color="white" />
+        </TouchableRipple>
+      ) : null}
+
       <Text
         style={{
           marginHorizontal: 16,
@@ -46,18 +62,20 @@ const HeaderForChooseShop = ({title, isSecond, navigation,exitToAuthThunk,podraz
         }}>
         {title}
       </Text>
-      <TouchableOpacity>
-      <MaterialCommunityIcons
-        style={{position: 'absolute', right: 16, opacity: 0.94}}
-        name="exit-to-app"
-        size={26}
-        color="white"
-        onPress={exitToAuthThunk}
-      />
-      </TouchableOpacity>
-      
     </View>
   );
 };
 
 export default HeaderForChooseShop;
+
+/**
+ *   <MaterialCommunityIcons
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={{position: 'absolute', left: 16, opacity: 0.94}}
+          name="home-outline"
+          size={26}
+          color="white"
+        />
+ */

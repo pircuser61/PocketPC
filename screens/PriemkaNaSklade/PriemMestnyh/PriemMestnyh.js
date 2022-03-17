@@ -18,55 +18,65 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useFocusEffect} from '@react-navigation/native';
 import {PocketPrPda1} from '../../../functions/PocketPrPda1';
 import PriemMestnyhHook from '../../../customHooks/PriemMestnyhHook';
-import {alertActions, TOGGLE_SCANNING} from '../../../constants/funcrions';
+import {
+  alertActions,
+  MAIN_COLOR,
+  TOGGLE_SCANNING,
+} from '../../../constants/funcrions';
 import {connect} from 'react-redux';
+import InputField from '../../../components/Perepalechivanie/InputField';
+import LoadingModalComponent from '../../../components/SystemComponents/LoadingModalComponent';
 
 const PriemMestnyh = ({navigation, user}) => {
   const [numNakl, setNumNakl] = useState('');
   const [podrazdToGo, setPodrazdToGo] = useState('');
+  const [loading, setLoading] = useState(false);
   const _api = PriemMestnyhHook();
   const {barcode} = _api;
   const _podrRef = useRef(null);
 
-  const _EnterAndFocus = () => {
-    setNumNakl(barcode.data.replace(/\D+/g, ''));
+  const _EnterAndFocus = bcd => {
+    setNumNakl(bcd.replace(/\D+/g, ''));
     _podrRef.current.focus();
   };
 
   useEffect(() => {
-    barcode.data ? _EnterAndFocus() : null;
+    //console.log(JSON.stringify(barcode));
+    barcode.data ? _EnterAndFocus(barcode.data) : null;
   }, [barcode]);
 
-  const enterNumNaklAndPodrazdToGo = () => {
-    Vibration.vibrate(200);
-    if (numNakl.length > 0 && podrazdToGo.length > 0) {
-      PocketPrPda1(
-        numNakl,
-        podrazdToGo,
-        user.user.TokenData[0].$.UserUID,
-        user.user.$['city.cod'],
-      )
-        .then(r => {
-          const {ParentId = '', IdNum = ''} = r;
-          r ? null : Alert.alert('Предупреждение', 'Накладная уже есть!');
-          Vibration.vibrate(200);
-          navigation.navigate('WorkWithPallete', {
-            numNakl,
-            podrazdToGo,
-            ParentId,
-            IdNum,
-          });
-        })
-        .catch(e => {
-          console.log(e);
-          alertActions(e);
-        });
-    } else {
+  const enterNumNaklAndPodrazdToGo = async () => {
+    try {
+      setLoading(true);
+      Keyboard.dismiss();
       if (numNakl.length === 0) {
         alertActions('Введите номер накладной');
+        return;
       } else if (podrazdToGo.length === 0) {
         alertActions('Введите номер подразделения');
+        return;
       }
+
+      if (numNakl.length > 0 && podrazdToGo.length > 0) {
+        const r = await PocketPrPda1(
+          numNakl,
+          podrazdToGo,
+          user.user.TokenData[0].$.UserUID,
+          user.user.$['city.cod'],
+        );
+        const {ParentId = '', IdNum = ''} = r;
+        r ? null : Alert.alert('Предупреждение', 'Накладная уже есть!');
+        navigation.navigate('WorkWithPallete', {
+          numNakl,
+          podrazdToGo,
+          ParentId,
+          IdNum,
+        });
+      }
+    } catch (error) {
+      alertActions(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +88,72 @@ const PriemMestnyh = ({navigation, user}) => {
           arrow={true}
           title={'Прием местных'}
         />
-        <Text style={{fontSize: 20, margin: 16}}>Введите номер накладной:</Text>
+        <InputField
+          onSubmit={() => {
+            _podrRef.current.focus();
+          }}
+          placeholder={'Введите номер накладной'}
+          isTextInput={true}
+          iconName={'barcode-scan'}
+          onIconPress={TOGGLE_SCANNING}
+          value={numNakl}
+          title={'Номер накладной'}
+          setValue={txt => {
+            setNumNakl(txt);
+          }}
+        />
+        <InputField
+          innerRef={_podrRef}
+          placeholder={'Введите номер подразделения'}
+          value={podrazdToGo}
+          keyboardType="numeric"
+          onSubmit={enterNumNaklAndPodrazdToGo}
+          isTextInput={true}
+          iconName={'close'}
+          onIconPress={() => {
+            Keyboard.dismiss();
+            setNumNakl('');
+            setPodrazdToGo('');
+          }}
+          title={'Номер подразделения'}
+          setValue={txt => {
+            setPodrazdToGo(txt);
+          }}
+        />
+
+        <TouchableOpacity
+          style={{
+            height: 48,
+            justifyContent: 'center',
+            zIndex: 100,
+            backgroundColor: MAIN_COLOR,
+            alignItems: 'center',
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+          }}
+          onPress={enterNumNaklAndPodrazdToGo}>
+          <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>
+            Далее
+          </Text>
+        </TouchableOpacity>
+        <LoadingModalComponent modalVisible={loading} />
+      </View>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+    podrazd: state.podrazd,
+  };
+};
+
+export default connect(mapStateToProps)(PriemMestnyh);
+
+/**
+ *  <Text style={{fontSize: 20, margin: 16}}>Введите номер накладной:</Text>
         <View style={{justifyContent: 'center'}}>
           <TextInput
             style={{
@@ -106,7 +181,7 @@ const PriemMestnyh = ({navigation, user}) => {
         </View>
 
         <Text style={{fontSize: 20, margin: 16}}>
-          Введите номер подразделения :
+          Введите номер подразделения:
         </Text>
         <View style={{justifyContent: 'center'}}>
           <TextInput
@@ -136,32 +211,4 @@ const PriemMestnyh = ({navigation, user}) => {
             <MaterialCommunityIcons name="close" size={28} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={{
-            height: 48,
-            justifyContent: 'center',
-            zIndex: 100,
-            backgroundColor: '#313C47',
-            alignItems: 'center',
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
-          }}
-          onPress={enterNumNaklAndPodrazdToGo}>
-          <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>
-            Далее
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-};
-
-const mapStateToProps = state => {
-  return {
-    user: state.user,
-    podrazd: state.podrazd,
-  };
-};
-
-export default connect(mapStateToProps)(PriemMestnyh);
+ */
