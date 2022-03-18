@@ -1,20 +1,49 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Alert} from 'react-native';
+import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
+import {alertError} from '../../constants/funcrions';
+import request from '../../soap-client/pocketRequest';
 
 const PerNaklMenu = (props: any) => {
+  const [loading, setloading] = useState(false);
+
+  let isMounted = true;
+  useEffect(() => {
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const numNakl = props.route.params.NumNakl;
   const permitTxt =
     props.route.params.PermitShopTo === 'true'
       ? ''
       : 'Нет доступа к подразделению!';
 
-  const goods = () => {
-    props.navigation.navigate('PerNaklSpecs', {numNakl});
-  };
   const paletts = () => {
     props.navigation.navigate('PerNaklPaletts', {numNakl});
+  };
+
+  const closeDlg = () => {
+    Alert.alert(
+      'Внимание!',
+      'Закрыть накладную ' + numNakl + '?',
+      [{text: 'Ок', onPress: close}, {text: 'Отмена'}],
+      {cancelable: false},
+    );
+  };
+
+  const close = async () => {
+    try {
+      setloading(true);
+      await request('PocketPerClose', {numNakl});
+    } catch (error) {
+      alertError(error);
+    } finally {
+      if (isMounted) setloading(false);
+    }
   };
 
   return (
@@ -29,9 +58,10 @@ const PerNaklMenu = (props: any) => {
         <SimpleButton active={false} text="Пересчет товара" />
         <SimpleButton active={false} text="Просмотр расхождений" />
         <SimpleButton active={false} text="Обнулить пересчет" />
-        <SimpleButton active={false} text="Закрыть накладнуюа" />
+        <SimpleButton text="Закрыть накладную" onPress={closeDlg} />
         <SimpleButton active={false} text="Печать накладной" />
       </View>
+      <LoadingModalComponent modalVisible={loading} />
     </ScreenTemplate>
   );
 };
