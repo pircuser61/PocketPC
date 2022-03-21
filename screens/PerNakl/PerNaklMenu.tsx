@@ -26,6 +26,10 @@ const PerNaklMenu = (props: any) => {
     props.navigation.navigate('PerNaklPaletts', {numNakl});
   };
 
+  const provPaletts = () => {
+    props.navigation.navigate('PerNaklProvPaletts', {numNakl});
+  };
+
   const closeDlg = () => {
     Alert.alert(
       'Внимание!',
@@ -55,7 +59,7 @@ const PerNaklMenu = (props: any) => {
         </View>
         <Text style={styles.simpleText}>{permitTxt}</Text>
         <SimpleButton text="Просмотр накладной" onPress={paletts} />
-        <SimpleButton active={false} text="Пересчет товара" />
+        <SimpleButton text="Пересчет товара" onPress={provPaletts} />
         <SimpleButton active={false} text="Просмотр расхождений" />
         <SimpleButton active={false} text="Обнулить пересчет" />
         <SimpleButton text="Закрыть накладную" onPress={closeDlg} />

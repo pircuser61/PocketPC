@@ -6,6 +6,8 @@ import PerNakl from '../../screens/PerNakl/PerNakl';
 import PerNaklMenu from '../../screens/PerNakl/PerNaklMenu';
 import PerNaklPaletts from '../../screens/PerNakl/PerNaklPaletts';
 import PerNaklSpecs from '../../screens/PerNakl/PerNaklSpecs';
+import PerNaklProvPaletts from '../../screens/PerNakl/PerNaklProvPaletts';
+import DocumentCheckScreen from '../../screens/ProverkaPallets/DocumentCheckScreen';
 
 enableScreens(true);
 const Stack = createNativeStackNavigator();
@@ -26,6 +28,14 @@ const PerNaklNav = (props: any) => {
       <Stack.Screen component={PerNaklMenu} name={'PerNaklInfo'} />
       <Stack.Screen component={PerNaklPaletts} name={'PerNaklPaletts'} />
       <Stack.Screen component={PerNaklSpecs} name={'PerNaklSpecs'} />
+      <Stack.Screen
+        component={PerNaklProvPaletts}
+        name={'PerNaklProvPaletts'}
+      />
+      <Stack.Screen
+        component={DocumentCheckScreen}
+        name={'DocumentCheckScreen'}
+      />
     </Stack.Navigator>
   );
 };
