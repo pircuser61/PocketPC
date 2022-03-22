@@ -6,7 +6,7 @@ import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
 import RecycleList from '../../components/SystemComponents/RecycleList';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import ScanInput from '../../components/SystemComponents/SimpleScanInput';
-import {alertError} from '../../constants/funcrions';
+import {alertActions, alertError} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
 import useScanner from '../../customHooks/simpleScanHook';
 
@@ -33,7 +33,10 @@ interface ISpecsRow {
 }
 
 interface ISpecs {
-  Specs: {SpecsRow: ISpecsRow[]};
+  Warning?: string;
+  Specs: {
+    SpecsRow: ISpecsRow[];
+  };
 }
 
 interface IRow {
@@ -42,6 +45,9 @@ interface IRow {
 
 export const PerNaklSpecs = (props: any) => {
   const numNakl = props.route.params.numNakl;
+  const Diff = props.route.params.diff
+    ? 'true'
+    : 'false'; /* request принимает только строки */
 
   const [loading, setloading] = useState(true);
   const [specs, setList] = useState<ISpecsRow[]>([]);
@@ -67,12 +73,15 @@ export const PerNaklSpecs = (props: any) => {
       setloading(true);
       const result = (await request(
         'PocketPerSpecs',
-        {numNakl},
+        {numNakl, Diff},
         {arrayAccessFormPaths: ['PocketPerSpecs.Specs.SpecsRow']},
       )) as ISpecs;
-      if (isMounted)
+      if (isMounted) {
         if (result?.Specs?.SpecsRow) setList(result.Specs.SpecsRow);
         else setList([]);
+
+        if (result?.Warning) alertActions(result?.Warning);
+      }
     } catch (error) {
       if (isMounted) alertError(error);
     } finally {

@@ -5,7 +5,7 @@ import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import {alertError} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
-
+import {IS_DEV} from '../../constants/funcrions';
 const PerNaklMenu = (props: any) => {
   const [loading, setloading] = useState(false);
 
@@ -29,17 +29,40 @@ const PerNaklMenu = (props: any) => {
   const provPaletts = () => {
     props.navigation.navigate('PerNaklProvPaletts', {numNakl});
   };
+  const viewDiff = () => {
+    props.navigation.navigate('PerNaklSpecs', {numNakl, diff: true});
+  };
 
-  const closeDlg = () => {
+  const provDeleteDlg = () => {
     Alert.alert(
       'Внимание!',
-      'Закрыть накладную ' + numNakl + '?',
-      [{text: 'Ок', onPress: close}, {text: 'Отмена'}],
+      'Удалить пересчет ' + numNakl + '?',
+      [{text: 'Ок', onPress: provDelete}, {text: 'Отмена'}],
       {cancelable: false},
     );
   };
 
-  const close = async () => {
+  const provDelete = async () => {
+    try {
+      setloading(true);
+      await request('PocketProvDelete', {numNakl, Type: '8'});
+    } catch (error) {
+      alertError(error);
+    } finally {
+      if (isMounted) setloading(false);
+    }
+  };
+
+  const perCloseDlg = () => {
+    Alert.alert(
+      'Внимание!',
+      'Закрыть накладную ' + numNakl + '?',
+      [{text: 'Ок', onPress: perClose}, {text: 'Отмена'}],
+      {cancelable: false},
+    );
+  };
+
+  const perClose = async () => {
     try {
       setloading(true);
       await request('PocketPerClose', {numNakl});
@@ -60,9 +83,13 @@ const PerNaklMenu = (props: any) => {
         <Text style={styles.simpleText}>{permitTxt}</Text>
         <SimpleButton text="Просмотр накладной" onPress={paletts} />
         <SimpleButton text="Пересчет товара" onPress={provPaletts} />
-        <SimpleButton active={false} text="Просмотр расхождений" />
-        <SimpleButton active={false} text="Обнулить пересчет" />
-        <SimpleButton text="Закрыть накладную" onPress={closeDlg} />
+        <SimpleButton text="Просмотр расхождений" onPress={viewDiff} />
+        <SimpleButton text="Обнулить пересчет" onPress={provDeleteDlg} />
+        {IS_DEV ? (
+          <SimpleButton text="Закрыть накладную" onPress={perCloseDlg} />
+        ) : (
+          <SimpleButton text="Закрыть накладную" active={false} />
+        )}
         <SimpleButton active={false} text="Печать накладной" />
       </View>
       <LoadingModalComponent modalVisible={loading} />

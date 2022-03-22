@@ -57,7 +57,7 @@ export const PerNaklPaletts = (props: any) => {
   }, []);
 
   const toGoods = () => {
-    props.navigation.navigate('PerNaklSpecs', {numNakl});
+    props.navigation.navigate('PerNaklSpecs', {numNakl, diff: false});
   };
 
   const getInfo = async () => {
