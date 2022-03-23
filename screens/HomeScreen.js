@@ -57,6 +57,7 @@ const HomeScreen = ({navigation, userRedux, exitToAuthThunk, podrazd}) => {
             r['$']['Trigger'] === 'm-prog2' ||
             r['$']['Trigger'] === 'm-prog4' ||
             r['$']['Trigger'] === 'm-prog7' ||
+            r['$']['Trigger'] === 'm-prog8' ||
             r['$']['Trigger'] === 'm-prog9' ||
             r['$']['Trigger'] === 'm-prog10' ||
             r['$']['Trigger'] === 'm-prog12' ||

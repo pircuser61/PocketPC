@@ -1,6 +1,6 @@
 //m-prog13 прием передаточной накладной
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacityComponent} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
 import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
 import RecycleList from '../../components/SystemComponents/RecycleList';
@@ -102,7 +102,9 @@ export const PerNaklProvPaletts = (props: any) => {
               <Text style={styles.colItem}>{item.Flag}</Text>
             </View>
             <View style={styles.col2}>
-              <Text style={styles.colItem}>{item.NumDoc}</Text>
+              <Text style={styles.colItem}>
+                {item.NumDoc === '-1' ? 'Без палетт' : item.NumDoc}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>

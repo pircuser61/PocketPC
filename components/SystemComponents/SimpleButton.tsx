@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   simpleButtonText: {
     color: 'black',
     paddingLeft: 16,
+    paddingRight: 16,
     fontSize: 22,
     //textAlign: 'center',
   },

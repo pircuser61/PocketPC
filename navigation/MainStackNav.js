@@ -25,6 +25,7 @@ import ProverkaNakladnyh from './ProverkaNakladnyh/ProverkaNakladnyhNav';
 import PlanogrammaNav from './Planogramma/PlanogrammaNav';
 import VykladkaNav from './Vykladka/VykladkaNav';
 import PerNaklNav from './PerNakl/PerNaklNav';
+import BarcodInfoEx from '../screens/BarcodInfoEx/BarcodInfoEx';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
@@ -64,6 +65,7 @@ const MainStackNav = observer(({user, podrazd}) => {
                 <Stack.Screen name={'m-prog14'} component={ProverkaNakladnyh} />
                 <Stack.Screen name={'m-prog4'} component={PlanogrammaNav} />
                 <Stack.Screen name={'m-prog7'} component={VykladkaNav} />
+                <Stack.Screen name={'m-prog8'} component={BarcodInfoEx} />
                 <Stack.Screen name="m-prog13" component={PerNaklNav} />
               </>
             ) : (
