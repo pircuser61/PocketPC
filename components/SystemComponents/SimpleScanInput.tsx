@@ -50,14 +50,14 @@ const ScanInput = observer(
             borderRadius: 4,
             borderWidth: 1,
             justifyContent: 'center',
-            height: 60,
+            height: 48,
             marginVertical: 8,
           }}>
           <TextInput
             autoFocus={autofocus}
             ref={innerRef as RefObject<TextInput>}
             multiline={false}
-            style={{paddingLeft: 16, paddingRight: 70}}
+            style={{paddingLeft: 16, paddingRight: 70, fontSize: 18}}
             keyboardType={keyBoardType}
             value={value}
             placeholder={
@@ -76,7 +76,7 @@ const ScanInput = observer(
               alignItems: 'center',
               right: 0,
               width: 60,
-              height: 60,
+              height: 48,
             }}
             onPress={TOGGLE_SCANNING}>
             {loading ? (
