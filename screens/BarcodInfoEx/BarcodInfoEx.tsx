@@ -78,7 +78,7 @@ let tm = Date.now();
 const BarcodInfoEx = (props: any) => {
   // const [barCod, setInputValue] = useState('4601819507436');
   //const [barCod, setInputValue] = useState('8716128567500');
-  const [barCod, setInputValue] = useState('1000041156');
+  const [barCod, setInputValue] = useState('');
   const [loading, setloading] = useState(false);
   const [viewMode, setViewMode] = useState(ViewMode.info);
   const [barInfo, setBarInfo] = useState<IBarInfo | null>(null);
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   text: {fontSize: 18},
 
   tableRowContainer: {
-    borderTopWidth: 0.3,
+    borderBottomWidth: 0.3,
     marginVertical: 6,
   },
 });
