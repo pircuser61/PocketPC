@@ -19,7 +19,7 @@ const PerNakl = (props: any) => {
   //const [numNakl, setInputValue] = useState('80334448');
   //const [numNakl, setInputValue] = useState('81609356'); // Много палет с размещением
   // const [numNakl, setInputValue] = useState('81609356'); // Один палетт с размещением
-  const [numNakl, setInputValue] = useState('');
+  const [numNakl, setInputValue] = useState('90004181');
   const [loading, setloading] = useState(false);
 
   let isMounted = true;
@@ -38,7 +38,7 @@ const PerNakl = (props: any) => {
       const result = (await request('PocketPer', {
         numNakl: numNakl,
       })) as IPerInfo;
-      if (isMounted) props.navigation.navigate('PerNaklInfo', result);
+      if (isMounted) props.navigation.navigate('PerNaklMenu', result);
     } catch (error) {
       if (isMounted) alertError(error);
     } finally {

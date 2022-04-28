@@ -26,7 +26,7 @@ const PerNaklNav = (props: any) => {
       }}
       headerMode="float">
       <Stack.Screen component={PerNakl} name={'PerNakl'} />
-      <Stack.Screen component={PerNaklMenu} name={'PerNaklInfo'} />
+      <Stack.Screen component={PerNaklMenu} name={'PerNaklMenu'} />
       <Stack.Screen component={PerNaklPaletts} name={'PerNaklPaletts'} />
       <Stack.Screen component={PerNaklSpecs} name={'PerNaklSpecs'} />
       <Stack.Screen

@@ -6,7 +6,10 @@ import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import {alertError} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
 import {IS_DEV} from '../../constants/funcrions';
+import PerNaklClose from './PerNaklClose';
+
 const PerNaklMenu = (props: any) => {
+  const [closeDlg, setCloseDlg] = useState(false);
   const [loading, setloading] = useState(false);
 
   let isMounted = true;
@@ -54,23 +57,14 @@ const PerNaklMenu = (props: any) => {
   };
 
   const perCloseDlg = () => {
-    Alert.alert(
+    setCloseDlg(true);
+    /*Alert.alert(
       'Внимание!',
       'Закрыть накладную ' + numNakl + '?',
       [{text: 'Ок', onPress: perClose}, {text: 'Отмена'}],
       {cancelable: false},
     );
-  };
-
-  const perClose = async () => {
-    try {
-      setloading(true);
-      await request('PocketPerClose', {numNakl});
-    } catch (error) {
-      alertError(error);
-    } finally {
-      if (isMounted) setloading(false);
-    }
+    */
   };
 
   return (
@@ -93,6 +87,9 @@ const PerNaklMenu = (props: any) => {
         <SimpleButton active={false} text="Печать накладной" />
       </View>
       <LoadingModalComponent modalVisible={loading} />
+      {closeDlg ? (
+        <PerNaklClose numNakl={numNakl} onHide={() => setCloseDlg(false)} />
+      ) : null}
     </ScreenTemplate>
   );
 };
