@@ -178,7 +178,6 @@ const PerNaklClose = ({
           onSubmit={(login, passw) => {
             dispatch({type: 'userFrom', user: {login, passw}});
           }}
-          initLogin="oper-from"
           onCancel={onHide}
           key="1"
           active={true}
@@ -214,12 +213,15 @@ const PerNaklClose = ({
         </Modal>
       ) : state.step === Steps.loginTo ? (
         <LoginDlg
-          title="Представитель торгового зала"
+          title={
+            state.UseSkl === 'true'
+              ? 'Представитель склада'
+              : 'Представитель торгового зала'
+          }
           onSubmit={(uid, pass) => {
             endCloseNakl(uid, pass);
           }}
           onCancel={onHide}
-          initLogin="oper-to"
           key="2"
           active={!state.isLoading}
         />
