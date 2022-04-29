@@ -45,6 +45,12 @@ export const alertActions = err => {
   Alert.alert('Ошибка!', err + '');
 };
 
+export const alertMsg = (msg, title = 'Внимание!') => {
+  Vibration.vibrate(200);
+  RNBeep.beep(false);
+  Alert.alert(title, msg);
+};
+
 export const alertError = err => {
   let msg = '';
   if (err instanceof Error) msg = error.message;

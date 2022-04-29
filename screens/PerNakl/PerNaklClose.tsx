@@ -3,7 +3,7 @@ import {Modal, StyleSheet, Text, View} from 'react-native';
 import LoginDlg from '../../components/SystemComponents/LoginDlg';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import request from '../../soap-client/pocketRequest';
-import {alertActions, alertError} from '../../constants/funcrions';
+import {alertMsg, alertError} from '../../constants/funcrions';
 //@ts-ignore
 import md5 from 'md5';
 import UserStore from '../../mobx/UserStore';
@@ -96,7 +96,7 @@ const PerNaklClose = ({
   }, []);
 
   const exitWithMsg = (msg: string) => {
-    alertActions(msg);
+    alertMsg(msg);
     onHide();
   };
 
@@ -114,7 +114,7 @@ const PerNaklClose = ({
       if (response.Closed === 'true') {
         exitWithMsg('Накладная закрыта');
       } else {
-        exitWithMsg('Накладная НЕ закрыта!');
+        throw Error('Накладная НЕ закрыта!');
       }
     } catch (error) {
       alertError(error);
@@ -136,7 +136,7 @@ const PerNaklClose = ({
         if (response.PerZo === 'true') {
           dispatch({type: 'response', response});
         } else {
-          exitWithMsg('Накладная НЕ закрыта!');
+          throw Error('Накладная НЕ закрыта!');
         }
       }
     } catch (error) {

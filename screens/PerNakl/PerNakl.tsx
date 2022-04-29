@@ -19,7 +19,7 @@ const PerNakl = (props: any) => {
   //const [numNakl, setInputValue] = useState('80334448');
   //const [numNakl, setInputValue] = useState('81609356'); // Много палет с размещением
   // const [numNakl, setInputValue] = useState('81609356'); // Один палетт с размещением
-  const [numNakl, setInputValue] = useState('90004181');
+  const [numNakl, setInputValue] = useState('90004241');
   const [loading, setloading] = useState(false);
 
   let isMounted = true;
