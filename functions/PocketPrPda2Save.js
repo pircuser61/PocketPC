@@ -12,6 +12,7 @@ export async function PocketPrPda2Save(
   ParentId = '',
   dop = '',
   City = '',
+  UserId = '',
 ) {
   //console.log(Qty);
   return new Promise((success, fail) => {
@@ -34,6 +35,9 @@ export async function PocketPrPda2Save(
             '<City>' +
             City +
             '</City>' +
+            '<Uid>' +
+            UserId +
+            '</Uid>' +
             '<ParentId>' +
             ParentId +
             '</ParentId>' +

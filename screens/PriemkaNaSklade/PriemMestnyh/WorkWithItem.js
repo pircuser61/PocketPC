@@ -40,6 +40,8 @@ import {alertActions, MAIN_COLOR} from '../../../constants/funcrions';
 import QtyElement from '../../../components/PriemkaNaSklade/PriemMestnyh/QtyElement';
 enableScreens();
 const WorkWithItemScreen = ({navigation, route, user}) => {
+  const cUid = user.user.TokenData[0].$.UserUID;
+
   let mounted = true;
   const _api = PriemMestnyhHook();
   const {barcode} = _api;
@@ -374,6 +376,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
                         route.params.ParentId,
                         DOP,
                         user.user.$['city.cod'],
+                        cUid,
                       )
                         .then(r => {
                           {
@@ -441,6 +444,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
                         route.params.ParentId,
                         DOP,
                         user.user.$['city.cod'],
+                        cUid,
                       )
                         .then(r => {
                           {
@@ -615,6 +619,7 @@ const WorkWithItemScreen = ({navigation, route, user}) => {
               route.params.ParentId,
               DOP,
               user.user.$['city.cod'],
+              cUid,
             )
               .then(r => {
                 if (

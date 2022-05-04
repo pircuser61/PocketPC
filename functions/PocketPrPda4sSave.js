@@ -43,6 +43,9 @@ export async function PocketPrPda4sSave(
             '<City>' +
             City +
             '</City>' +
+            '<Uid>' +
+            UID +
+            '</Uid>' +
             '<ParentId>' +
             ParentId +
             '</ParentId>' +
