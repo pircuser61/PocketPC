@@ -50,6 +50,32 @@ const initState: State = {
   Closed: '',
 };
 
+function reducer(state: State, action: Action): State {
+  state.isLoading = false;
+  switch (action.type) {
+    case 'request':
+      return {...state, isLoading: true};
+    case 'response': {
+      let newState = {...state, ...action.response};
+      if (!newState.UserFrom) newState.step = Steps.loginFrom;
+      else newState.step = newState.UserKpp ? Steps.kppDlg : Steps.loginTo;
+      return newState;
+    }
+    case 'userFrom':
+      return {
+        ...state,
+        UserFrom: action.user!.login,
+        PassFrom: action.user!.passw,
+
+        step: state.UserKpp ? Steps.kppDlg : Steps.loginTo,
+      };
+    case 'getUserTo':
+      return {...state, step: Steps.loginTo};
+  }
+  alertMsg('unsupported action: ' + action.type);
+  return {...state};
+}
+
 const PerNaklClose = ({
   numNakl,
   onHide,
@@ -57,36 +83,7 @@ const PerNaklClose = ({
   numNakl: string;
   onHide: () => void;
 }) => {
-  function reducer(state: State, action: Action): State {
-    state.isLoading = false;
-    switch (action.type) {
-      case 'request':
-        return {...state, isLoading: true};
-      case 'response': {
-        let newState = {...state, ...action.response};
-        if (!newState.UserFrom) newState.step = Steps.loginFrom;
-        else newState.step = newState.UserKpp ? Steps.kppDlg : Steps.loginTo;
-        return newState;
-      }
-      case 'userFrom':
-        return {
-          ...state,
-          UserFrom: action.user!.login,
-          PassFrom: action.user!.passw,
-
-          step: state.UserKpp ? Steps.kppDlg : Steps.loginTo,
-        };
-      case 'getUserTo':
-        return {...state, step: Steps.loginTo};
-      default:
-        exitWithMsg('unsupported action: ' + action.type);
-    }
-    return initState; // never
-  }
-
   const [state, dispatch] = useReducer(reducer, initState);
-
-  console.log('view ' + Date.now());
 
   let isMounted = true;
   useEffect(() => {
@@ -96,7 +93,7 @@ const PerNaklClose = ({
   }, []);
 
   const exitWithMsg = (msg: string) => {
-    alertMsg(msg);
+    if (isMounted) alertMsg(msg);
     onHide();
   };
 
@@ -117,7 +114,7 @@ const PerNaklClose = ({
         throw Error('Накладная НЕ закрыта!');
       }
     } catch (error) {
-      alertError(error);
+      if (isMounted) alertError(error);
       onHide();
     }
   };
@@ -140,7 +137,7 @@ const PerNaklClose = ({
         }
       }
     } catch (error) {
-      alertError(error);
+      if (isMounted) alertError(error);
       onHide();
     }
   };
@@ -186,9 +183,8 @@ const PerNaklClose = ({
         <Modal transparent={true}>
           <View style={styles.shadowView}>
             <View style={styles.background}>
-              <Text style={styles.labelText}>
-                {'Документ прошел КПП ' + state.KppInfo}
-              </Text>
+              <Text style={styles.labelText}>{'Документ прошел КПП '}</Text>
+              <Text style={styles.labelText}>{state.KppInfo}</Text>
               <Text style={styles.labelText}>
                 Расхождений нет. Возможно закрытие без представителя ТЗ. Закрыть
                 документ?

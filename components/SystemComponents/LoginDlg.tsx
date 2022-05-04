@@ -4,7 +4,6 @@ import SimpleButton from './SimpleButton';
 
 const LoginDlg = ({
   title,
-
   onSubmit,
   onCancel,
   initLogin = '',
@@ -20,14 +19,19 @@ const LoginDlg = ({
   const [password, setPassword] = useState('');
   const refLogin = useRef<TextInput>(null);
   const refPassword = useRef<TextInput>(null);
-
+  /* для тестов*/
   useEffect(() => {
-    console.log('LOGIN MOUNT ' + initLogin);
     setLogin(initLogin);
     setPassword('');
-    return () => {
-      console.log('LOGIN UNMOUNT ');
-    };
+  }, []);
+
+  /* При автофокусе клавиатура непоказывается, приходится делать так */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      refLogin.current?.blur();
+      refLogin.current?.focus();
+    }, 40);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -38,9 +42,7 @@ const LoginDlg = ({
 
           <TextInput
             style={styles.input}
-            autoFocus={true}
             placeholder="Табельный номер"
-            keyboardType="numeric"
             value={login}
             ref={refLogin}
             onChangeText={setLogin}
