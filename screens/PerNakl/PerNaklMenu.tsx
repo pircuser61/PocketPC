@@ -79,11 +79,7 @@ const PerNaklMenu = (props: any) => {
         <SimpleButton text="Пересчет товара" onPress={provPaletts} />
         <SimpleButton text="Просмотр расхождений" onPress={viewDiff} />
         <SimpleButton text="Обнулить пересчет" onPress={provDeleteDlg} />
-        {IS_DEV ? (
-          <SimpleButton text="Закрыть накладную" onPress={perCloseDlg} />
-        ) : (
-          <SimpleButton text="Закрыть накладную" active={false} />
-        )}
+        <SimpleButton text="Закрыть накладную" onPress={perCloseDlg} />
         <SimpleButton active={false} text="Печать накладной" />
       </View>
       <LoadingModalComponent modalVisible={loading} />
