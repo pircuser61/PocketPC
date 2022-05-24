@@ -1,14 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-} from 'react-native';
-import {Divider} from 'react-native-paper';
+import {FlatList, View, ActivityIndicator} from 'react-native';
+
 import HeaderPriemka from '../../components/PriemkaNaSklade/Header';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MenuItem from '../../components/PriemkaNaSklade/MenuItem';
 
 const menuItems = [
@@ -33,7 +26,7 @@ const menuItems = [
     navName: 'CheckPattlesNaSklade',
   },
   {title: 'Прием перед.накладных', id: '6', ready: false},
-  {title: 'ТТН', id: '7', ready: false},
+  {title: 'ТТН', id: '7', ready: true, navName: 'TtnNav'},
   {title: 'Проверка ВГХ', id: '8', ready: false},
   {
     title: 'Возвраты поставщику',

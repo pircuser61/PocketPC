@@ -13,6 +13,7 @@ import PriemMestnyhNav from './PriemMestnyhNav';
 import PriemPoStrihBumageNav from './PriemPoStrihBumageNav';
 import CrossDockingNav from './CrossDockingNav';
 import CheckPattlesNaSklade from './CheckPattlesNaSklade';
+import TtnNav from './TtnNav';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
@@ -46,6 +47,7 @@ const PriemkaNaSkladeNav = ({user, podrazd}) => {
         name="GetBarcodeInfoScreen"
         component={GetBarcodeInfoScreen}
       />
+      <Stack.Screen name="TtnNav" component={TtnNav} />
       <Stack.Screen name="CrossDockingNav" component={CrossDockingNav} />
       <Stack.Screen
         name="CheckPattlesNaSklade"

@@ -112,7 +112,7 @@ export const ViewTypes = {
   HALF_RIGHT: 2,
 };
 
-export const IS_DEV = false;
+export const IS_DEV = true;
 
 export const MAIN_COLOR = '#313C47';
 

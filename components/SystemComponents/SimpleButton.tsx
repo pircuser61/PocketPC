@@ -21,13 +21,13 @@ const SimpleButton = (props: SimpleButtonProps) => {
     );
   }
   return (
-    <View style={[styles.SimpleButtonContainer, props.containerStyle]}>
-      <TouchableOpacity onPress={props.onPress}>
-        <Text style={[styles.simpleButtonText, props.textStyle]}>
-          {props.text}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      onPress={props.onPress}
+      style={[styles.SimpleButtonContainer, props.containerStyle]}>
+      <Text style={[styles.simpleButtonText, props.textStyle]}>
+        {props.text}
+      </Text>
+    </TouchableOpacity>
   );
 };
 

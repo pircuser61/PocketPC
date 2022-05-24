@@ -22,10 +22,10 @@ const request = async (
     ...requestSettings,
     ...body,
   });
-  /*
-  console.log('REQUEST');
-  console.log(request_body);
-*/
+  
+  console.log('\x1b[36m', 'REQUEST');
+  console.log('\x1b[36m', request_body);
+
   soapRequest.InitParams({
     targetNamespace: 'urn:gestori-gate:ws_gate',
     targetPrefix: 'urn',
@@ -61,7 +61,10 @@ const request = async (
     throw 'Ошибка извлечения тела ответа [1].';
   }
   if (!response_json) throw 'Ошибка извлечения тела ответа [2].';
-
+/*
+  console.log('\x1b[33m', 'XML RESPONSE');
+  console.log('\x1b[33m', response_json);
+*/
   for (let key in response_json) {
     if (key === 'ReturnResponse') {
       let isErr = true;
@@ -80,7 +83,8 @@ const request = async (
         else 'Ошибка уровния прослойки.';
     }
     if (key === wsName) {
-      const err: string = response_json[key]._Error;
+      const err : string = response_json[key]._Error;
+      if (err === undefined) throw 'Сервис не вернул признак ошибки.';
       if (err.toLocaleLowerCase() != 'false') {
         const err_text: string = response_json[key].Error;
         if (err_text && err_text.length > 0) throw err_text;
@@ -88,10 +92,8 @@ const request = async (
       }
     } else throw 'Ожидался корневой элемент ' + wsName + ' получен ' + key;
   }
-  /*
-  console.log('RESPONSE');
-  console.log(response_json);
-*/
+  console.log('\x1b[32m', 'RESPONSE JSON:');
+  console.log('\x1b[32m', response_json);
   return response_json[wsName];
 };
 
