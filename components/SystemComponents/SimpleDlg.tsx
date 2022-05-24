@@ -9,7 +9,7 @@ const SimpleDlg = ({
   children = null,
 }: {
   onSubmit?: () => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   active?: boolean;
   children?: React.ReactNode;
 }) => {
@@ -19,18 +19,22 @@ const SimpleDlg = ({
         <View style={styles.background}>
           {children}
           <View style={styles.buttonsView}>
-            <SimpleButton
-              text="Ок"
-              containerStyle={styles.buttonStyle}
-              onPress={onSubmit}
-              active={active}
-            />
-            <SimpleButton
-              text="Отмена"
-              containerStyle={styles.buttonStyle}
-              onPress={onCancel}
-              active={active}
-            />
+            {onSubmit ? (
+              <SimpleButton
+                text="Ок"
+                containerStyle={styles.buttonStyle}
+                onPress={onSubmit}
+                active={active}
+              />
+            ) : null}
+            {onCancel ? (
+              <SimpleButton
+                text="Отмена"
+                containerStyle={styles.buttonStyle}
+                onPress={onCancel}
+                active={active}
+              />
+            ) : null}
           </View>
         </View>
       </View>

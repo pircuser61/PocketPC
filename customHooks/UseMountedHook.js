@@ -6,7 +6,7 @@ const useIsMounted = () => {
   useEffect(() => {
     isMounted.current = true;
     return () => {
-      console.log('\x1b[1;31m', 'MOUNT OFF!!!!!');
+      // console.log('\x1b[1;31m', 'MOUNT OFF!!!!!');
       isMounted.current = false;
     };
   }, []);

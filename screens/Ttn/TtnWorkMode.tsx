@@ -42,17 +42,6 @@ const TtnWorkMode = (props: any) => {
             });
           }}
         />
-
-        <SimpleButton
-          containerStyle={{marginTop: 20}}
-          text="Просмотр ТТН OLD"
-          onPress={() => {
-            props.navigation.navigate('TtnPalettsOld', {
-              ...props.route.params,
-              workMode: 'View',
-            });
-          }}
-        />
       </View>
     </ScreenTemplate>
   );

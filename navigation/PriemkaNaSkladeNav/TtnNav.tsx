@@ -6,7 +6,6 @@ import TtnType from '../../screens/Ttn/TtnType';
 import TtnList from '../../screens/Ttn/TtnList';
 import TtnWorkMode from '../../screens/Ttn/TtnWorkMode';
 import TtnPaletts from '../../screens/Ttn/TtnPaletts';
-import TtnPalettsOld from '../../screens/Ttn/TtnPalettsOld';
 
 enableScreens(true);
 const Stack = createNativeStackNavigator();
@@ -27,7 +26,6 @@ const TtnNav = (props: any) => {
       <Stack.Screen component={TtnList} name={'TtnList'} />
       <Stack.Screen component={TtnWorkMode} name={'TtnWorkMode'} />
       <Stack.Screen component={TtnPaletts} name={'TtnPaletts'} />
-      <Stack.Screen component={TtnPalettsOld} name={'TtnPalettsOld'} />
     </Stack.Navigator>
   );
 };

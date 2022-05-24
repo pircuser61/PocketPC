@@ -19,28 +19,6 @@ import UserStore from '../../mobx/UserStore';
 const ITEM_HEiGHT = 66;
 const ROW_HEGHT = 60;
 
-const styles = StyleSheet.create({
-  header: {flexDirection: 'row', backgroundColor: '#D1D1D1'},
-  rowLine: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#DDDDFF',
-    height: ROW_HEGHT,
-  },
-  rowLineSel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: ROW_HEGHT,
-    backgroundColor: '#DDDDDD',
-  },
-  col1: {flex: 1},
-  col2: {flex: 4},
-  col3: {flex: 3},
-  col4: {flex: 3},
-  col5: {flex: 3},
-  colItem: {fontSize: 18},
-});
-
 interface ITTN {
   ID: string;
   Flag: string;
@@ -61,7 +39,7 @@ export const TtnList = (props: any) => {
   const [ttnList, setList] = useState<ITTN[]>([]);
   const listRef = useRef<any>();
 
-  console.log('TTN LIST RENDER state: ' + state);
+  //console.log('TTN LIST RENDER state: ' + state);
 
   let isMounted = true;
   useEffect(() => {
@@ -88,18 +66,6 @@ export const TtnList = (props: any) => {
     }
   };
 
-  const Cell = ({
-    style,
-    children,
-  }: {
-    style: StyleProp<ViewStyle>;
-    children?: React.ReactNode;
-  }) => (
-    <View style={style}>
-      <Text style={styles.colItem}>{children}</Text>
-    </View>
-  );
-
   const createTTN = async (codOb: string) => {
     try {
       if (!isMounted) return;
@@ -123,26 +89,23 @@ export const TtnList = (props: any) => {
     }
   };
 
-  const rowRenderer = React.useCallback(
-    (_: any, item: ITTN) => {
-      return (
-        <TouchableOpacity
-          style={item.Selected ? styles.rowLineSel : styles.rowLine}
-          delayLongPress={300}
-          onPress={() => {
-            props.navigation.navigate('TtnWorkMode', {...item});
-          }}>
-          <Cell style={styles.col1}>{item.Flag}</Cell>
-          <Cell style={styles.col2}>{item.DtNakl}</Cell>
-          <Cell style={styles.col3}>{item.NumDoc}</Cell>
-          <Cell style={styles.col4}>{item.ObFrom}</Cell>
-          <Cell style={styles.col5}>{item.ObTo}</Cell>
-          <Divider />
-        </TouchableOpacity>
-      );
-    },
-    [ttnList],
-  );
+  const rowRenderer = (_: any, item: ITTN) => {
+    return (
+      <TouchableOpacity
+        style={item.Selected ? styles.rowLineSel : styles.rowLine}
+        delayLongPress={300}
+        onPress={() => {
+          props.navigation.navigate('TtnWorkMode', {...item});
+        }}>
+        <Cell flex={1}>{item.Flag}</Cell>
+        <Cell flex={3}>{item.DtNakl}</Cell>
+        <Cell flex={3}>{item.NumDoc}</Cell>
+        <Cell flex={3}>{item.ObFrom}</Cell>
+        <Cell flex={3}>{item.ObTo}</Cell>
+        <Divider />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScreenTemplate {...props} title={'ТТН'}>
@@ -154,11 +117,11 @@ export const TtnList = (props: any) => {
           paddingRight: 10,
         }}>
         <View style={[styles.header]}>
-          <Cell style={styles.col1}>Ф</Cell>
-          <Cell style={styles.col2}>Дата</Cell>
-          <Cell style={styles.col3}>Номер</Cell>
-          <Cell style={styles.col4}>Из</Cell>
-          <Cell style={styles.col5}>В</Cell>
+          <Cell flex={1}>Ф</Cell>
+          <Cell flex={3}>Дата</Cell>
+          <Cell flex={3}>Номер</Cell>
+          <Cell flex={3}>Из</Cell>
+          <Cell flex={3}>В</Cell>
         </View>
         <RecycleList
           data={ttnList}
@@ -194,3 +157,27 @@ export const TtnList = (props: any) => {
 };
 
 export default TtnList;
+
+const Cell = ({flex, children}: {flex: number; children?: React.ReactNode}) => (
+  <View style={{flex: flex}}>
+    <Text style={styles.colItem}>{children}</Text>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  header: {flexDirection: 'row', backgroundColor: '#D1D1D1'},
+  rowLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EEEEEE',
+    height: ROW_HEGHT,
+  },
+  rowLineSel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: ROW_HEGHT,
+    backgroundColor: '#DDDDDD',
+  },
+
+  colItem: {fontSize: 18, textAlign: 'center'},
+});

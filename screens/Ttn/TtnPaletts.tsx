@@ -3,66 +3,32 @@ import {
   View,
   Text,
   StyleSheet,
-  RefreshControl,
   ScrollView,
   StyleProp,
   ViewStyle,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
-import {Divider} from 'react-native-paper';
 import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
-
-import {alertError} from '../../constants/funcrions';
+import {alertError, alertMsg} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import ScanInput from '../../components/SystemComponents/SimpleScanInput';
 import useIsMounted from '../../customHooks/UseMountedHook';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
-import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
-import {Item} from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 
 /*
 
 TODO:
-НЕТ индикации во время запроса, пока воткнул       <LoadingModalComponent modalVisible={state === 'request'} />
-+++ Диалог удаления палетта/списка палетт
-+++ Удаление палетт из списка ()
 Выделение палетты  (подсветка созданной, )
-Привести интерфейс в порядок
 
+КНОПКУ "ОБНОВИТЬ" - ДОБАВИТЬ ОТСТУП СНИЗУ
 */
 
-const LI_HEIGHT = 66;
-const LI_WITDH = 1600;
-const ROW_HEGHT = 60;
-
-const styles = StyleSheet.create({
-  header: {flexDirection: 'row', width: LI_WITDH, backgroundColor: '#D1D1D1'},
-  rowLine: {
-    flexDirection: 'row',
-    width: LI_WITDH,
-    alignItems: 'center',
-    height: ROW_HEGHT,
-    backgroundColor: '#EEEEEE',
-  },
-  selectedLine: {
-    flexDirection: 'row',
-    width: LI_WITDH,
-    alignItems: 'center',
-    height: ROW_HEGHT,
-    backgroundColor: '#DDDDDD',
-  },
-  col1: {flex: 3},
-  col2: {flex: 4},
-  col15: {flex: 6},
-  colItem: {fontSize: 18, textAlign: 'center'},
-  labelText: {
-    paddingTop: 10,
-    fontSize: 18,
-  },
-});
+const LI_WITDH = 1000;
+const LI_HEIGHT = 78;
+const ROW_HEGHT = 70;
 
 interface IPal {
   TypeDoc: string;
@@ -81,11 +47,14 @@ interface IPal {
   Weight: string;
   Amount: string;
   Id: string;
+  indx: number;
 }
 
 interface IPalList {
   Palett: IPal[];
   SelIndx?: number;
+  HasChecked?: string;
+  Message?: string;
 }
 
 const layoutProvider = new LayoutProvider(
@@ -97,41 +66,9 @@ const layoutProvider = new LayoutProvider(
 );
 layoutProvider.shouldRefreshWithAnchoring = false;
 
-const Cell = ({
-  style,
-  children,
-}: {
-  style: StyleProp<ViewStyle>;
-  children?: React.ReactNode;
-}) => (
-  <View style={style}>
-    <Text style={styles.colItem}>{children}</Text>
-  </View>
-);
-
-const TableHeader = () => (
-  <View style={styles.header}>
-    <Cell style={styles.col1}>Ф</Cell>
-    <Cell style={styles.col2}> Палетт</Cell>
-    <Cell style={styles.col2}> Дата</Cell>
-    <Cell style={styles.col2}> Ф</Cell>
-    <Cell style={styles.col2}> N Зак</Cell>
-    <Cell style={styles.col2}> Отдел</Cell>
-    <Cell style={styles.col2}> Откуда</Cell>
-    <Cell style={styles.col2}> Куда</Cell>
-    <Cell style={styles.col2}> Мест</Cell>
-    <Cell style={styles.col2}> Вес по ТОРГ13</Cell>
-    <Cell style={styles.col2}> Сумма по ТОРГ13</Cell>
-    <Cell style={styles.col2}> Пер.Накл.</Cell>
-    <Cell style={styles.col2}> Тип</Cell>
-    <Cell style={styles.col2}> Из подр</Cell>
-    <Cell style={styles.col15}> Логист. палетт </Cell>
-  </View>
-);
-
-let initDt = Date.now();
+//let initDt = Date.now();
 export const TtnPaletts = (props: any) => {
-  initDt = Date.now();
+  //initDt = Date.now();
 
   const params = props.route.params;
   const WorkMode = params.workMode;
@@ -154,46 +91,43 @@ export const TtnPaletts = (props: any) => {
 
   const [state, setState] = useState('');
   const listRef = useRef<any>();
-  const dataProviderRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
+  const dpRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
   const [inputVal, setInputVal] = useState('5339311');
   const isMounted = useIsMounted();
   const currRow = useRef(-1);
 
-  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
+  //  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
 
   useEffect(() => {
-    getTTNpaletts();
+    if (WorkMode === 'Check') getTTNpaletts({ReqdChecked: 'true'});
+    else getTTNpaletts();
   }, []);
 
-  const getTTNpaletts = async (Cmd?: string) => {
+  const getTTNpaletts = async (cmd?: object) => {
     try {
+      /*
       if (!isMounted.current) {
         console.log('\x1b[1;31m', 'NOT MOUNTED!!!');
         return;
       }
-
+*/
       setState('request');
-      const req =
-        Cmd === 'Find'
-          ? {ID: params.ID, NumPal: inputVal, WorkMode}
-          : Cmd === 'DelPal'
-          ? {ID: params.ID, DeletePal: currRow.current, WorkMode}
-          : Cmd === 'DelPlist'
-          ? {ID: params.ID, DeletePlist: currRow.current, WorkMode}
-          : {ID: params.ID, WorkMode};
-      console.log(Cmd + ' ' + currRow);
+      const req = {ID: params.ID, WorkMode};
+      if (cmd) Object.assign(req, cmd);
       const result = (await request('PocketTTNpaletts', req, {
         arrayAccessFormPaths: ['PocketTTN.TTN'],
       })) as IPalList;
-      const data = result?.Palett ?? [];
+
       currRow.current = result?.SelIndx ?? -1;
-
-      dataProviderRef.current = dataProviderRef.current.cloneWithRows(data);
-
+      dpRef.current = dpRef.current.cloneWithRows(result?.Palett ?? []);
+      const hasChecked = result?.HasChecked?.toLowerCase() === 'true' ?? false;
       if (isMounted.current) {
         if (currRow.current > -1)
           listRef?.current?.scrollToIndex(currRow.current, true);
-        setState('RequestComplete');
+
+        if (result?.Message) alertMsg(result?.Message);
+        if (hasChecked) setState('askClear');
+        else setState('RequestComplete');
       }
     } catch (error) {
       if (isMounted.current) {
@@ -204,46 +138,69 @@ export const TtnPaletts = (props: any) => {
   };
 
   const rowRenderer = (_: any, item: IPal, ix: number) => {
-    console.log('ROW_RENDER ' + item.NumPal + ' ' + (Date.now() - initDt));
-
+    /*  console.log(
+      'ROW_RENDER ' + currRow.current + ' ' + ix + ' ' + (Date.now() - initDt),
+    );
+*/
     return (
       <TouchableOpacity
-        style={ix == currRow.current ? styles.selectedLine : styles.rowLine}
+        style={ix == currRow.current ? styles.selectedLI : styles.LI}
         delayLongPress={500}
         onLongPress={
           WorkMode === 'Edit'
             ? () => {
                 currRow.current = ix;
+                dpRef.current = dpRef.current.cloneWithRows(
+                  dpRef.current.getAllData(),
+                );
                 setState('askDel');
               }
             : undefined
         }>
-        <Cell style={styles.col1}>{item.Flag} </Cell>
-        <Cell style={styles.col2}>{item.NumPal} </Cell>
-        <Cell style={styles.col2}>{item.DtZak} </Cell>
-        <Cell style={styles.col2}>{item.FlagZak} </Cell>
-        <Cell style={styles.col2}>{item.NumZak} </Cell>
-        <Cell style={styles.col2}>{item.CodDep} </Cell>
-        <Cell style={styles.col2}>{item.FromShop} </Cell>
-        <Cell style={styles.col2}>{item.ToShop} </Cell>
-        <Cell style={styles.col2}>{item.PlaceCount} </Cell>
-        <Cell style={styles.col2}>{item.Weight} </Cell>
-        <Cell style={styles.col2}>{item.Amount} </Cell>
-        <Cell style={styles.col2}>{item.NumPer} </Cell>
-        <Cell style={styles.col2}>{item.TypeDoc} </Cell>
-        <Cell style={styles.col2}>{item.ShopFrom} </Cell>
-        <Cell style={styles.col15}>{item.NumLogPal} </Cell>
-        <Divider />
+        <View style={{flexDirection: 'row'}}>
+          <Cell flex={2}>{item.Flag} </Cell>
+          <Cell flex={4}>{item.NumPal} </Cell>
+
+          <Cell flex={3}>{item.DtZak} </Cell>
+          <Cell flex={2}>{item.FlagZak} </Cell>
+          <Cell flex={4}>{item.NumZak} </Cell>
+
+          <Cell flex={5}>{item.NumPer} </Cell>
+          <Cell flex={2}>{item.TypeDoc} </Cell>
+          <Cell flex={3}>{item.ShopFrom} </Cell>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <TextLine label="Мест:" text={item.PlaceCount} />
+          <TextLine label="Откуда:" text={item.FromShop} />
+          <TextLine label="Куда:" text={item.ToShop} />
+          <TextLine label="Отдел:" text={item.CodDep} />
+          <TextLine label="Логист. палетт:" text={item.NumLogPal} />
+          <TextLine label="Вес:" text={item.Weight} />
+          <TextLine label="Сумма:" text={item.Amount} />
+        </View>
       </TouchableOpacity>
     );
   };
 
+  const ClearCheckDlg = () => {
+    return (
+      <SimpleDlg>
+        <SimpleButton onPress={() => setState('')} text="Продолжить пересчет" />
+        <SimpleButton
+          onPress={() => getTTNpaletts({Clear: 'true'})}
+          text="Начать пересчет (обнулить)"
+        />
+      </SimpleDlg>
+    );
+  };
+
   const DeleteDlg = () => {
-    const item = dataProviderRef.current.getDataForIndex(currRow.current);
-    const onSubmit = () => getTTNpaletts('DelPal');
+    const item = dpRef.current.getDataForIndex(currRow.current);
+
     const onCancel = () => setState('cancelDelete');
 
-    if (item.NumLogPal == '0' || item.NumLogPal == '')
+    if (item.NumLogPal == '0' || item.NumLogPal == '') {
+      const onSubmit = () => getTTNpaletts({DeletePal: item.Id});
       return (
         <SimpleDlg onSubmit={onSubmit} onCancel={onCancel}>
           <Text style={styles.labelText}>
@@ -251,72 +208,142 @@ export const TtnPaletts = (props: any) => {
           </Text>
         </SimpleDlg>
       );
+    } else {
+      const onSubmit = () => getTTNpaletts({DeleteList: item.NumLogPal});
+      return (
+        <SimpleDlg onSubmit={onSubmit} onCancel={onCancel}>
+          <Text style={styles.labelText}>
+            {'Палетт ' +
+              item.NumPal +
+              ' добавлен в Лог.Палетт ' +
+              item.NumLogPal}
+          </Text>
 
-    return (
-      <SimpleDlg onSubmit={onSubmit} onCancel={onCancel}>
-        <Text style={styles.labelText}>
-          {'Палетт ' + item.NumPal + ' добавлен в Лог.Палетт ' + item.NumLogPal}
-        </Text>
-
-        <Text style={styles.labelText}>{'Удалить Весь Лог.Палетт?'}</Text>
-      </SimpleDlg>
-    );
+          <Text style={styles.labelText}>{'Удалить Весь Лог.Палетт?'}</Text>
+        </SimpleDlg>
+      );
+    }
   };
+  /* 
+  из за широкого View на listView не видно индикатора refresh-control'a,
+  поэтому в RecyclerListVeiw не используется 
 
+  на внешний scrollview перенсти нельзя, он глючит - свайп вниз всегда считает обновлением, 
+  т.к. сам горизонтальный и о положении вертикального не знает
+      
+*/
   return (
     <ScreenTemplate {...props} title={title}>
-      <View
-        style={{
-          marginLeft: 10,
-          marginRight: 10,
-        }}>
+      <View style={styles.view1}>
         <ScanInput
           placeholder="Поиск по баркоду"
           value={inputVal}
-          onSubmit={() => getTTNpaletts('Find')}
+          onSubmit={() => getTTNpaletts({NumPal: inputVal})}
           setValue={setInputVal}></ScanInput>
       </View>
       <ScrollView horizontal={true}>
-        <View
-          style={{
-            flex: 7,
-            borderBottomWidth: 1,
-            paddingLeft: 10,
-            paddingRight: 10,
-            width: LI_WITDH,
-          }}>
+        <View style={styles.view2}>
           <TableHeader />
 
-          {dataProviderRef.current.getSize() > 0 ? (
+          {dpRef.current.getSize() > 0 ? (
             <RecyclerListView
               ref={listRef}
               layoutProvider={layoutProvider}
-              dataProvider={dataProviderRef.current}
+              dataProvider={dpRef.current}
               rowRenderer={rowRenderer}
-              scrollViewProps={{
-                refreshControl: (
-                  <RefreshControl
-                    refreshing={state === 'request'}
-                    onRefresh={getTTNpaletts}
-                  />
-                ),
-              }}
-              optimizeForInsertDeleteAnimations={true}
+              optimizeForInsertDeleteAnimations={false}
             />
           ) : (
             <Text>Список пуст</Text>
           )}
         </View>
       </ScrollView>
-      <LoadingModalComponent modalVisible={state === 'request'} />
+
       <SimpleButton
         text="Обновить"
         onPress={getTTNpaletts}
-        containerStyle={{marginLeft: 10, marginRight: 10}}></SimpleButton>
-
-      {state === 'askDel' ? <DeleteDlg /> : null}
+        containerStyle={styles.updateButton}
+      />
+      <LoadingModalComponent modalVisible={state === 'request'} />
+      {state === 'askDel' ? (
+        <DeleteDlg />
+      ) : state === 'askClear' ? (
+        <ClearCheckDlg />
+      ) : null}
     </ScreenTemplate>
   );
 };
 
 export default TtnPaletts;
+
+const Cell = ({flex, children}: {flex: number; children?: React.ReactNode}) => (
+  <View style={{flex: flex}}>
+    <Text style={styles.colItem}>{children}</Text>
+  </View>
+);
+
+const TableHeader = () => (
+  <View style={styles.ListHeader}>
+    <Cell flex={2}>Ф</Cell>
+    <Cell flex={4}>Палетт</Cell>
+
+    <Cell flex={3}>Дата</Cell>
+    <Cell flex={2}>Ф</Cell>
+    <Cell flex={4}>N Зак</Cell>
+
+    <Cell flex={5}>Пер.Накл.</Cell>
+    <Cell flex={2}>Тип</Cell>
+    <Cell flex={3}>Из подр</Cell>
+  </View>
+);
+
+const TextLine = ({label, text}: {label?: string; text?: string}) => (
+  <View style={{flexDirection: 'row'}}>
+    {label ? <Text style={styles.textLineLable}>{label}</Text> : null}
+    <Text style={styles.textLineText}>{text}</Text>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  // что бы не плыли колонки нужно задвать явно ширину и ушапки и у строк
+  ListHeader: {
+    width: LI_WITDH,
+    flexDirection: 'row',
+    backgroundColor: '#D1D1D1',
+  },
+  LI: {
+    width: LI_WITDH,
+    height: ROW_HEGHT,
+    backgroundColor: '#EEEEEE',
+  },
+  selectedLI: {
+    width: LI_WITDH,
+    height: ROW_HEGHT,
+    backgroundColor: '#DDDDDD',
+  },
+
+  colItem: {fontSize: 20, textAlign: 'center'},
+  labelText: {
+    paddingTop: 10,
+    fontSize: 18,
+  },
+
+  textLineLable: {fontSize: 18, fontWeight: 'bold', paddingRight: 10},
+  textLineText: {fontSize: 18, paddingRight: 20},
+  view1: {
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+
+  view2: {
+    borderBottomWidth: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+
+  updateButton: {
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+});
