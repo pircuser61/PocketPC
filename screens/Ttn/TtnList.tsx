@@ -62,7 +62,7 @@ export const TtnList = (props: any) => {
   useEffect(() => {
     getTTNlist();
   }, []);
-
+  /*
   let tm = Date.now();
   console.log(
     'TTN LIST RENDER state: ' +
@@ -72,7 +72,7 @@ export const TtnList = (props: any) => {
       ' ' +
       tm,
   );
-
+*/
   const getTTNlist = async (codOb?: string) => {
     try {
       if (!isMounted.current) return;

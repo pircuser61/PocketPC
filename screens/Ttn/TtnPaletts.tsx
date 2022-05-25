@@ -94,7 +94,7 @@ export const TtnPaletts = (props: any) => {
     else getTTNpaletts();
   }, []);
 
-  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
+  //  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
 
   const rowRenderer0 = (_: any, item: IPal, ix: number) => {
     //  console.log('ROW_RENDER0 ' + ix + ' ' + (Date.now() - initDt));
