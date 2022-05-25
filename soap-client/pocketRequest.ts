@@ -23,8 +23,8 @@ const request = async (
     ...body,
   });
   
-  console.log('\x1b[36m', 'REQUEST');
-  console.log('\x1b[36m', request_body);
+  //console.log('\x1b[36m', 'REQUEST');
+  //console.log('\x1b[36m', request_body);
 
   soapRequest.InitParams({
     targetNamespace: 'urn:gestori-gate:ws_gate',
@@ -92,8 +92,10 @@ const request = async (
       }
     } else throw 'Ожидался корневой элемент ' + wsName + ' получен ' + key;
   }
+/*
   console.log('\x1b[32m', 'RESPONSE JSON:');
   console.log('\x1b[32m', response_json);
+*/
   return response_json[wsName];
 };
 

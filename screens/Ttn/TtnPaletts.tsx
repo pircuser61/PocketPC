@@ -1,11 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  StyleProp,
-  ViewStyle,
   TouchableOpacity,
 } from 'react-native';
 import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
@@ -19,11 +17,8 @@ import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
 import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 
 /*
-
 TODO:
 Выделение палетты  (подсветка созданной, )
-
-КНОПКУ "ОБНОВИТЬ" - ДОБАВИТЬ ОТСТУП СНИЗУ
 */
 
 const LI_WITDH = 1000;
@@ -66,10 +61,9 @@ const layoutProvider = new LayoutProvider(
 );
 layoutProvider.shouldRefreshWithAnchoring = false;
 
-//let initDt = Date.now();
+let initDt = Date.now();
 export const TtnPaletts = (props: any) => {
-  //initDt = Date.now();
-
+  initDt = Date.now();
   const params = props.route.params;
   const WorkMode = params.workMode;
   const workModeName =
@@ -89,59 +83,22 @@ export const TtnPaletts = (props: any) => {
     ' ' +
     workModeName;
 
-  const [state, setState] = useState('');
+  const [inputVal, setInputVal] = useState('');
+  const [state, setState] = useState('request');
   const listRef = useRef<any>();
   const dpRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
-  const [inputVal, setInputVal] = useState('5339311');
-  const isMounted = useIsMounted();
   const currRow = useRef(-1);
-
-  //  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
-
+  const isMounted = useIsMounted();
   useEffect(() => {
     if (WorkMode === 'Check') getTTNpaletts({ReqdChecked: 'true'});
     else getTTNpaletts();
   }, []);
 
-  const getTTNpaletts = async (cmd?: object) => {
-    try {
-      /*
-      if (!isMounted.current) {
-        console.log('\x1b[1;31m', 'NOT MOUNTED!!!');
-        return;
-      }
-*/
-      setState('request');
-      const req = {ID: params.ID, WorkMode};
-      if (cmd) Object.assign(req, cmd);
-      const result = (await request('PocketTTNpaletts', req, {
-        arrayAccessFormPaths: ['PocketTTN.TTN'],
-      })) as IPalList;
+  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
 
-      currRow.current = result?.SelIndx ?? -1;
-      dpRef.current = dpRef.current.cloneWithRows(result?.Palett ?? []);
-      const hasChecked = result?.HasChecked?.toLowerCase() === 'true' ?? false;
-      if (isMounted.current) {
-        if (currRow.current > -1)
-          listRef?.current?.scrollToIndex(currRow.current, true);
+  const rowRenderer0 = (_: any, item: IPal, ix: number) => {
+    //  console.log('ROW_RENDER0 ' + ix + ' ' + (Date.now() - initDt));
 
-        if (result?.Message) alertMsg(result?.Message);
-        if (hasChecked) setState('askClear');
-        else setState('RequestComplete');
-      }
-    } catch (error) {
-      if (isMounted.current) {
-        setState('RequestError');
-        alertError(error);
-      }
-    }
-  };
-
-  const rowRenderer = (_: any, item: IPal, ix: number) => {
-    /*  console.log(
-      'ROW_RENDER ' + currRow.current + ' ' + ix + ' ' + (Date.now() - initDt),
-    );
-*/
     return (
       <TouchableOpacity
         style={ix == currRow.current ? styles.selectedLI : styles.LI}
@@ -181,6 +138,67 @@ export const TtnPaletts = (props: any) => {
       </TouchableOpacity>
     );
   };
+  /*
+  const rowRenderer2 = useCallback((_: any, item: IPal, ix: number) => {
+    console.log('ROW_RENDER2 ' + ix + ' ' + (Date.now() - initDt));
+
+    return (
+      <TouchableOpacity style={styles.LI} delayLongPress={500}>
+        <View style={{flexDirection: 'row'}}>
+          <Cell flex={2}>{item.Flag} </Cell>
+          <Cell flex={4}>{item.NumPal} </Cell>
+
+          <Cell flex={3}>{item.DtZak} </Cell>
+          <Cell flex={2}>{item.FlagZak} </Cell>
+          <Cell flex={4}>{item.NumZak} </Cell>
+
+          <Cell flex={5}>{item.NumPer} </Cell>
+          <Cell flex={2}>{item.TypeDoc} </Cell>
+          <Cell flex={3}>{item.ShopFrom} </Cell>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <TextLine label="Мест:" text={item.PlaceCount} />
+          <TextLine label="Откуда:" text={item.FromShop} />
+          <TextLine label="Куда:" text={item.ToShop} />
+          <TextLine label="Отдел:" text={item.CodDep} />
+          <TextLine label="Логист. палетт:" text={item.NumLogPal} />
+          <TextLine label="Вес:" text={item.Weight} />
+          <TextLine label="Сумма:" text={item.Amount} />
+        </View>
+      </TouchableOpacity>
+    );
+  }, []);
+*/
+  const getTTNpaletts = async (cmd?: object) => {
+    try {
+      setState('request');
+      const req = {ID: params.ID, WorkMode};
+      if (cmd) Object.assign(req, cmd);
+      const result = (await request('PocketTTNpaletts', req, {
+        arrayAccessFormPaths: ['PocketTTNpaletts.Palett'],
+      })) as IPalList;
+
+      currRow.current = result?.SelIndx ?? -1;
+      dpRef.current = dpRef.current.cloneWithRows(result?.Palett ?? []);
+      // console.log(result);
+      // console.log(dpRef.current.getSize());
+
+      const hasChecked = result?.HasChecked?.toLowerCase() === 'true' ?? false;
+      if (isMounted.current) {
+        if (currRow.current > -1)
+          listRef?.current?.scrollToIndex(currRow.current, true);
+
+        if (result?.Message) alertMsg(result?.Message);
+        if (hasChecked) setState('askClear');
+        else setState('RequestComplete');
+      }
+    } catch (error) {
+      if (isMounted.current) {
+        setState('RequestError');
+        alertError(error);
+      }
+    }
+  };
 
   const ClearCheckDlg = () => {
     return (
@@ -196,7 +214,6 @@ export const TtnPaletts = (props: any) => {
 
   const DeleteDlg = () => {
     const item = dpRef.current.getDataForIndex(currRow.current);
-
     const onCancel = () => setState('cancelDelete');
 
     if (item.NumLogPal == '0' || item.NumLogPal == '') {
@@ -232,6 +249,7 @@ export const TtnPaletts = (props: any) => {
   т.к. сам горизонтальный и о положении вертикального не знает
       
 */
+  // console.log('RETURN ' + (Date.now() - initDt));
   return (
     <ScreenTemplate {...props} title={title}>
       <View style={styles.view1}>
@@ -244,13 +262,12 @@ export const TtnPaletts = (props: any) => {
       <ScrollView horizontal={true}>
         <View style={styles.view2}>
           <TableHeader />
-
           {dpRef.current.getSize() > 0 ? (
             <RecyclerListView
               ref={listRef}
               layoutProvider={layoutProvider}
               dataProvider={dpRef.current}
-              rowRenderer={rowRenderer}
+              rowRenderer={rowRenderer0}
               optimizeForInsertDeleteAnimations={false}
             />
           ) : (
@@ -297,9 +314,9 @@ const TableHeader = () => (
   </View>
 );
 
-const TextLine = ({label, text}: {label?: string; text?: string}) => (
+const TextLine = ({label, text}: {label: string; text: string}) => (
   <View style={{flexDirection: 'row'}}>
-    {label ? <Text style={styles.textLineLable}>{label}</Text> : null}
+    <Text style={styles.textLineLable}>{label}</Text>
     <Text style={styles.textLineText}>{text}</Text>
   </View>
 );

@@ -4,20 +4,29 @@ import {
   View,
   Text,
   StyleSheet,
-  ViewStyle,
-  StyleProp,
+  RefreshControl,
 } from 'react-native';
-import {Divider} from 'react-native-paper';
 import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
-import RecycleList from '../../components/SystemComponents/RecycleList';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
-import {alertError} from '../../constants/funcrions';
+import {alertError, SCREEN_WIDTH} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
 import TtnCreateDlg from './TtnCreateDlg';
 import UserStore from '../../mobx/UserStore';
+import useIsMounted from '../../customHooks/UseMountedHook';
+import {DataProvider, LayoutProvider, RecyclerListView} from 'recyclerlistview';
+import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 
-const ITEM_HEiGHT = 66;
+const LI_HEIGHT = 66;
 const ROW_HEGHT = 60;
+
+const layoutProvider = new LayoutProvider(
+  _ => 0,
+  (_, dim) => {
+    dim.width = SCREEN_WIDTH;
+    dim.height = LI_HEIGHT;
+  },
+);
+layoutProvider.shouldRefreshWithAnchoring = false;
 
 interface ITTN {
   ID: string;
@@ -26,7 +35,6 @@ interface ITTN {
   NumDoc: string;
   ObFrom: string;
   ObTo: string;
-  Selected?: boolean;
 }
 
 interface ITTNlist {
@@ -35,74 +43,77 @@ interface ITTNlist {
 }
 
 export const TtnList = (props: any) => {
-  const [state, setState] = useState('');
-  const [ttnList, setList] = useState<ITTN[]>([]);
+  const [state, setState] = useState('request'); // как будто сразу делаем запрос, подождем useEffect
+  const dpRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
   const listRef = useRef<any>();
+  const selRow = useRef(-1);
+  const isMounted = useIsMounted();
 
-  //console.log('TTN LIST RENDER state: ' + state);
-
-  let isMounted = true;
+  /* 
+    нажать "добавить" и тут же тапнуть на списке 
+    проваимся onPress, но state будет askCodOb, при возврате на данный экран
+    новый render'а не произойдет, а прошлый рендер не случился из за смены экрана 
+    - т.е. некоректное состояние
+    если сделать просто переменную let disbaleOnpress то натыкаемся на "stale closure"
+    либо реф либо выносить за пределы функции ...
+  */
+  const disableOnPress = useRef(false);
+  disableOnPress.current = state == 'askCodOb';
   useEffect(() => {
     getTTNlist();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  const getTTNlist = async () => {
-    try {
-      if (!isMounted) return;
-      setState('reqList');
-      const result = (await request(
-        'PocketTTN',
-        {CurrShop: UserStore.podrazd.Id},
-        {arrayAccessFormPaths: ['PocketTTN.TTN']},
-      )) as ITTNlist;
-      setList(result?.TTN ?? []);
-    } catch (error) {
-      if (isMounted) alertError(error);
-    } finally {
-      setState('');
-    }
-  };
+  let tm = Date.now();
+  console.log(
+    'TTN LIST RENDER state: ' +
+      state +
+      ' disabled ' +
+      disableOnPress +
+      ' ' +
+      tm,
+  );
 
-  const createTTN = async (codOb: string) => {
+  const getTTNlist = async (codOb?: string) => {
     try {
-      if (!isMounted) return;
-      if (!codOb) throw 'Не указан код объединения-получателя';
-      setState('reqCreate');
-      const result = (await request(
-        'PocketTTN',
-        {CurrShop: UserStore.podrazd.Id, CreateToOb: codOb},
-        {arrayAccessFormPaths: ['PocketTTN.TTN']},
-      )) as ITTNlist;
-      if (isMounted) {
-        setList(result?.TTN ?? []);
-
-        if (result?.SelIndx)
-          listRef?.current?.scrollToIndex(result?.SelIndx, true);
+      if (!isMounted.current) return;
+      if (codOb === '') throw 'Не указан код объединения-получателя';
+      setState('request');
+      const req = codOb
+        ? {CurrShop: UserStore.podrazd.Id, CreateToOb: codOb}
+        : {CurrShop: UserStore.podrazd.Id};
+      const result = (await request('PocketTTN', req, {
+        arrayAccessFormPaths: ['PocketTTN.TTN'],
+      })) as ITTNlist;
+      if (isMounted.current) {
+        dpRef.current = dpRef.current.cloneWithRows(result?.TTN ?? []);
+        selRow.current = result?.SelIndx ?? -1;
+        setState('requestComplete');
+        if (selRow.current >= 0)
+          listRef?.current?.scrollToIndex(selRow.current, true);
       }
     } catch (error) {
-      if (isMounted) alertError(error);
-    } finally {
-      if (isMounted) setState('');
+      if (isMounted.current) {
+        alertError(error);
+        setState('error');
+      }
     }
   };
 
-  const rowRenderer = (_: any, item: ITTN) => {
+  const rowRenderer = (_: any, item: ITTN, ix: number) => {
+    // console.log('rowRender' + (Date.now() - tm));
     return (
       <TouchableOpacity
-        style={item.Selected ? styles.rowLineSel : styles.rowLine}
+        style={selRow.current == ix ? styles.rowLineSel : styles.rowLine}
         delayLongPress={300}
         onPress={() => {
-          props.navigation.navigate('TtnWorkMode', {...item});
+          if (!disableOnPress.current)
+            props.navigation.navigate('TtnWorkMode', item);
         }}>
         <Cell flex={1}>{item.Flag}</Cell>
         <Cell flex={3}>{item.DtNakl}</Cell>
         <Cell flex={3}>{item.NumDoc}</Cell>
         <Cell flex={3}>{item.ObFrom}</Cell>
         <Cell flex={3}>{item.ObTo}</Cell>
-        <Divider />
       </TouchableOpacity>
     );
   };
@@ -116,21 +127,28 @@ export const TtnList = (props: any) => {
           paddingLeft: 10,
           paddingRight: 10,
         }}>
-        <View style={[styles.header]}>
-          <Cell flex={1}>Ф</Cell>
-          <Cell flex={3}>Дата</Cell>
-          <Cell flex={3}>Номер</Cell>
-          <Cell flex={3}>Из</Cell>
-          <Cell flex={3}>В</Cell>
-        </View>
-        <RecycleList
-          data={ttnList}
-          customref={listRef}
-          itemHeight={ITEM_HEiGHT}
-          refreshing={state == 'reqList'}
-          onRefresh={getTTNlist}
-          _rowRenderer={rowRenderer}
-        />
+        <TableHeader />
+        {dpRef.current.getSize() > 0 ? (
+          <RecyclerListView
+            ref={listRef}
+            layoutProvider={layoutProvider}
+            dataProvider={dpRef.current}
+            rowRenderer={rowRenderer}
+            optimizeForInsertDeleteAnimations={false}
+            scrollViewProps={{
+              refreshControl: (
+                <RefreshControl
+                  refreshing={
+                    false /* LoadingModalComponent покажет колесико, что бы было одинаково */
+                  }
+                  onRefresh={getTTNlist}
+                />
+              ),
+            }}
+          />
+        ) : (
+          <Text>Список пуст</Text>
+        )}
       </View>
 
       <SimpleButton
@@ -140,23 +158,35 @@ export const TtnList = (props: any) => {
           marginRight: 10,
         }}
         onPress={() => {
+          disableOnPress.current = true;
           setState('askCodOb');
         }}
         text="Добавить"
       />
-
-      {state == 'askCodOb' || state == 'reqCreate' ? (
+      <LoadingModalComponent modalVisible={state === 'request'} />
+      {state == 'askCodOb' ? (
         <TtnCreateDlg
-          onSubmit={createTTN}
-          onCancel={() => setState('')}
-          active={state == 'askCodOb'}
+          onSubmit={getTTNlist}
+          onCancel={() => {
+            setState('');
+          }}
         />
       ) : null}
     </ScreenTemplate>
   );
 };
-
+//<LoadingModalComponent modalVisible={state === 'request'} />
 export default TtnList;
+
+const TableHeader = () => (
+  <View style={styles.header}>
+    <Cell flex={1}>Ф</Cell>
+    <Cell flex={3}>Дата</Cell>
+    <Cell flex={3}>Номер</Cell>
+    <Cell flex={3}>Из</Cell>
+    <Cell flex={3}>В</Cell>
+  </View>
+);
 
 const Cell = ({flex, children}: {flex: number; children?: React.ReactNode}) => (
   <View style={{flex: flex}}>
@@ -169,8 +199,8 @@ const styles = StyleSheet.create({
   rowLine: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EEEEEE',
     height: ROW_HEGHT,
+    backgroundColor: '#EEEEEE',
   },
   rowLineSel: {
     flexDirection: 'row',

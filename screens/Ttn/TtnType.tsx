@@ -13,14 +13,14 @@ const TtnType = (props: any) => {
         }}>
         <SimpleButton
           containerStyle={{marginTop: 20}}
-          text="Местные, Исходящие ТТН"
+          text="Местные, Исходящие"
           onPress={() => {
             props.navigation.navigate('TtnList');
           }}
         />
         <SimpleButton
           containerStyle={{marginTop: 20}}
-          text="Входящие Междугородние ТТН"
+          text="Входящие Междугородние"
           active={false}
         />
       </View>

@@ -5,11 +5,9 @@ import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
 const TtnCreateDlg = ({
   onSubmit,
   onCancel,
-  active,
 }: {
   onSubmit: (x: string) => void;
   onCancel: () => void;
-  active: boolean;
 }) => {
   const [codOb, setCodOb] = useState('');
 
@@ -20,7 +18,7 @@ const TtnCreateDlg = ({
         style={styles.input}
         placeholder="Укажить код объединения"
         onChangeText={setCodOb}
-        editable={active}
+        editable={true}
       />
     </SimpleDlg>
   );
