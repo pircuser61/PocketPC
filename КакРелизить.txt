@@ -5,6 +5,7 @@
     cd <project_folder>/android;
     gradlew clean  -- Чистит кэш;
     gradlew bundleRelease  -- получаем .aab файл;
+    cd ../
     npx react-native run-android --variant=release   -- получаем .apk файл; 
 
     готовые .apk лежат в 

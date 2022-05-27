@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,12 @@ import useIsMounted from '../../customHooks/UseMountedHook';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
 import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
+import useScanner from '../../customHooks/simpleScanHook';
 
 /*
 TODO:
 Выделение палетты  (подсветка созданной, )
+Индикация обновления в списке палетт выглядит криво
 */
 
 const LI_WITDH = 1000;
@@ -89,10 +91,16 @@ export const TtnPaletts = (props: any) => {
   const dpRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
   const currRow = useRef(-1);
   const isMounted = useIsMounted();
+
   useEffect(() => {
     if (WorkMode === 'Check') getTTNpaletts({ReqdChecked: 'true'});
     else getTTNpaletts();
   }, []);
+
+  useScanner((val: string) => {
+    setInputVal(val);
+    getTTNpaletts({NumPal: val});
+  });
 
   //  console.log('RENDER: isMounted ' + isMounted.current + ' State: ' + state);
 
@@ -174,6 +182,7 @@ export const TtnPaletts = (props: any) => {
       setState('request');
       const req = {ID: params.ID, WorkMode};
       if (cmd) Object.assign(req, cmd);
+      // console.log(req);
       const result = (await request('PocketTTNpaletts', req, {
         arrayAccessFormPaths: ['PocketTTNpaletts.Palett'],
       })) as IPalList;
