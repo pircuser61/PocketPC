@@ -409,6 +409,7 @@ export type GlobalCheckNavProps = {
   DocumentCheckScreen: {
     item: ProvPalSpecsRow & {NumNakl: string};
     action: (needAlert?: boolean) => Promise<void>;
+    QRDocType: string;
   };
   CreatePalletInCheckScreen: {
     NumNakl: string;

@@ -2,7 +2,6 @@ import {observer} from 'mobx-react-lite';
 import React, {useEffect, useState} from 'react';
 import {
   Alert,
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -31,8 +30,8 @@ import {
   PocketProvGoodsGet,
   PocketProvGoodsGetProps,
 } from '../../functions/PocketProvGoodsGet';
-import {useSharedValue} from 'react-native-reanimated';
 import DocumentStatusButton from '../../components/GlobalProverka/DocumentStatusButton';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export type DocumentCheckScreenProps = NativeStackScreenProps<
   GlobalCheckNavProps,
@@ -47,6 +46,8 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
   }
 
   const {item} = props.route.params;
+  const QRDocType = props.route.params.QRDocType;
+
   const [goodInfo, setgoodInfo] = useState<GoodsRow | null>(null);
   const [loading, setloading] = useState<boolean>(true);
   const [relativePosition, setRelativePosition] = useState<{
@@ -261,7 +262,7 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
       setFilter('false');
     }
   };
-
+  /*
   const getInfoByIDNUM = (Item: GoodsRow) => {
     getGoodInfo({
       All: filter,
@@ -277,7 +278,7 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
       Shop: UserStore.podrazd.Id,
     });
   };
-
+*/
   const navigateToCreate = () => {
     if (CheckPalletsStore.Type === '7') {
       Alert.alert('Внимание', 'Добавление для типа 7 запрещено', [
@@ -290,6 +291,19 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
         inputtitle: 'Баркод',
       });
     }
+  };
+
+  const navigateToQR = () => {
+    console.log('GoToQR: ' + item.NumNakl + ' ' + item.NumDoc);
+    //@ts-ignore
+    props.navigation.navigate('MarkHonest', {
+      ...props.route.params,
+      NumProv: item.NumNakl,
+      NumPal: item.NumDoc,
+      SpecsType: QRDocType,
+      IdNum: goodInfo?.IdNum,
+      QtyReqd: goodInfo ? goodInfo.QtyFact : 0,
+    });
   };
 
   const addGood = async (bcd = '', isSecondScreen = false) => {
@@ -306,9 +320,6 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
         DisplayShop: UserStore.podrazd.Id,
       });
       getGoodInfo({Item: response as GoodsRow});
-      // if (isSecondScreen) {
-      //   props.navigation.goBack();
-      // }
     } catch (error) {
       if (isSecondScreen) {
         throw error;
@@ -357,7 +368,7 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
   useEffect(() => {
     return () => {
       mounted = false;
-      props.route.params.action();
+      if (props.route.params.action) props.route.params.action();
     };
   }, []);
 
@@ -367,12 +378,6 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
     <ScreenTemplate
       {...props}
       title={CheckPalletsStore.Title.thirdScreen + ' №' + item.NumDoc}>
-      {/* <Button
-        title={'testscan'}
-        onPress={() => {
-          setBarcode({...barcode, data: '2102021025005'});
-        }}
-      /> */}
       {loading ? (
         <LoadingFlexComponent />
       ) : !goodInfo ? (
@@ -453,28 +458,48 @@ const DocumentCheckScreen = observer((props: DocumentCheckScreenProps) => {
               justifyContent: 'flex-end',
               flexDirection: 'row',
             }}>
+            {QRDocType && (
+              <TouchableOpacity
+                style={[
+                  styles.buttonCircle,
+                  {
+                    opacity: 1,
+                    marginRight: 8,
+                    marginLeft: 8,
+                  },
+                ]}
+                onPress={navigateToQR}>
+                <MaterialCommunityIcons
+                  name={'qrcode-scan'}
+                  color="white"
+                  size={20}
+                />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={[
                 styles.buttonCircle,
                 {
                   opacity: 1,
+                  marginRight: 8,
                 },
               ]}
               onPress={changeQtyFunction}>
               <Feather name="edit-2" size={20} color="white" />
             </TouchableOpacity>
-            <View style={{width: 16}} />
+
             <TouchableOpacity
               style={[
                 styles.buttonCircle,
                 {
                   opacity: 1,
+                  marginRight: 8,
                 },
               ]}
               onPress={minusFunction}>
               <Feather name="minus" size={20} color="white" />
             </TouchableOpacity>
-            <View style={{width: 16}} />
+
             <TouchableOpacity
               style={[
                 styles.buttonCircle,
@@ -538,44 +563,3 @@ const styles = StyleSheet.create({
     borderRadius: 32,
   },
 });
-
-/**
- *    <View style={{flex: 1}}>
-        <HeaderPriemka {...props} title={'Документ №' + item.NumDoc} />
-        {!goodInfo ? (
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text>Информации нет</Text>
-          </View>
-        ) : (
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <ScrollView style={{flex: 1}}>
-              <TouchableOpacity
-                style={{justifyContent:рам 'center'}}
-                onPress={() => {
-                  if (CheckPalletsStore.Type === '7') {
-                    Alert.alert(
-                      'Внимание',
-                      'Редактирование товара запрещено для типа 7',
-                      [{text: 'Закрыть', style: 'cancel'}],
-                    );
-                  } else setchangeModalVisible(true);
-                }}>
-                <QtyCell {...goodInfo} />
-                <View style={{position: 'absolute', right: 16}}>
-                  <MaterialCommunityIcons
-                    name={'chevron-right'}
-                    size={20}
-                    style={{}}
-                  />
-                </View>
-              </TouchableOpacity>
-              <FirstCell {...goodInfo} />
-              <SecondCell {...goodInfo} />
-            </ScrollView>
-          </View>
- */
-
-/**refreshControl={
-              <RefreshControl refreshing={loading} onRefresh={getCurr} />
-            } */

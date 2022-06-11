@@ -53,7 +53,7 @@ export const alertMsg = (msg, title = 'Внимание!') => {
 
 export const alertError = err => {
   let msg = '';
-  if (err instanceof Error) msg = error.message;
+  if (err instanceof Error) msg = err.message;
   else msg = err;
   Vibration.vibrate(200);
   RNBeep.beep(false);
@@ -112,7 +112,7 @@ export const ViewTypes = {
   HALF_RIGHT: 2,
 };
 
-export const IS_DEV = false;
+export const IS_DEV = true;
 
 export const MAIN_COLOR = '#313C47';
 

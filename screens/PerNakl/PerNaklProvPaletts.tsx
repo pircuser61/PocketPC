@@ -91,6 +91,7 @@ export const PerNaklProvPaletts = (props: any) => {
             console.log(numNakl + ' ' + item.NumDoc);
 
             props.navigation.navigate('DocumentCheckScreen', {
+              QRDocType: 'provpal3',
               item: {
                 NumNakl: numNakl,
                 NumDoc: item.NumDoc,

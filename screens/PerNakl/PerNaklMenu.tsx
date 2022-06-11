@@ -58,13 +58,6 @@ const PerNaklMenu = (props: any) => {
 
   const perCloseDlg = () => {
     setCloseDlg(true);
-    /*Alert.alert(
-      'Внимание!',
-      'Закрыть накладную ' + numNakl + '?',
-      [{text: 'Ок', onPress: perClose}, {text: 'Отмена'}],
-      {cancelable: false},
-    );
-    */
   };
 
   return (

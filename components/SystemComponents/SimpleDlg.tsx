@@ -16,7 +16,7 @@ const SimpleDlg = ({
   return (
     <Modal transparent={true}>
       <View style={styles.shadowView}>
-        <View style={styles.background}>
+        <View style={styles.whiteView}>
           {children}
           <View style={styles.buttonsView}>
             {onSubmit ? (
@@ -47,13 +47,14 @@ export default SimpleDlg;
 const styles = StyleSheet.create({
   buttonStyle: {width: 120, alignItems: 'center'},
 
-  background: {
+  whiteView: {
     backgroundColor: 'white',
     padding: 12,
     borderRadius: 8,
     width: 360,
     position: 'absolute',
     top: 90,
+    flex: 1,
   },
   shadowView: {
     flex: 1,

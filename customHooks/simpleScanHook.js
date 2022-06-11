@@ -6,8 +6,8 @@ import {useFocusEffect} from '@react-navigation/core';
 const useScanner = callback => {
   const barcodeScanned = scanData => {
     let scannedData = scanData['com.symbol.datawedge.data_string'];
-    //let scannedType = scanData['com.symbol.datawedge.label_type'];
-    callback(scannedData);
+    let scannedType = scanData['com.symbol.datawedge.label_type'];
+    callback(scannedData, scannedType);
   };
 
   useFocusEffect(
