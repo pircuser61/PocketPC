@@ -5,7 +5,7 @@ import ScreenTemplate from '../../components/SystemComponents/ScreenTemplate';
 import LoadingModalComponent from '../../components/SystemComponents/LoadingModalComponent';
 import SimpleButton from '../../components/SystemComponents/SimpleButton';
 import ScanInput from '../../components/SystemComponents/SimpleScanInput';
-import {alertError} from '../../constants/funcrions';
+import {alertError, IS_DEV} from '../../constants/funcrions';
 import request from '../../soap-client/pocketRequest';
 import useScanner from '../../customHooks/simpleScanHook';
 
@@ -15,7 +15,7 @@ interface IPerInfo {
 }
 
 const PerNakl = (props: any) => {
-  const [numNakl, setInputValue] = useState('');
+  const [numNakl, setInputValue] = useState(IS_DEV ? '91119272' : '');
   const [loading, setloading] = useState(false);
 
   let isMounted = true;

@@ -24,7 +24,7 @@ import Inventarization from '../screens/Inventatization';
 import ProverkaNakladnyh from './ProverkaNakladnyh/ProverkaNakladnyhNav';
 import PlanogrammaNav from './Planogramma/PlanogrammaNav';
 import VykladkaNav from './Vykladka/VykladkaNav';
-import PerNaklNav from './PerNakl/PerNaklNav';
+import PerNaklNav from '../screens/PerNakl/PerNaklNav';
 import BarcodInfoEx from '../screens/BarcodInfoEx/BarcodInfoEx';
 
 enableScreens();

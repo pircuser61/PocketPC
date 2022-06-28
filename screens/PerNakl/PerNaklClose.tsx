@@ -75,8 +75,8 @@ function reducer(state: State, action: Action): State {
       }
 
       if (action.response?.PerNaklDiff?.PerNaklDiffRow) {
-        console.log('\x1b[31m', 'REDUSER');
-        console.log(action.response.PerNaklDiff.PerNaklDiffRow);
+        //console.log('\x1b[31m', 'REDUSER');
+        //console.log(action.response.PerNaklDiff.PerNaklDiffRow);
         return {
           ...state,
           step: Steps.askDiff,
@@ -123,7 +123,7 @@ const PerNaklClose = ({
     arrayAccessFormPaths: ['PocketPerClose.PerNaklDiff.PerNaklDiffRow'],
   };
 
-  console.log('\x1b[34m', 'RENDER');
+  //console.log('\x1b[34m', 'RENDER');
   //console.log(state);
 
   const endCloseNakl = async (userTo: string, passwTo: string) => {
@@ -212,6 +212,7 @@ const PerNaklClose = ({
           data={state.diff ?? []}
           onCancel={onHide}
           onSubmit={() => endCloseNakl('', '')}
+          active={!state.isLoading}
         />
       );
 

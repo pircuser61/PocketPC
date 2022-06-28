@@ -40,7 +40,7 @@ import SizedBox from '../components/SystemComponents/SizedBox';
 
 const LoginScreen = (props: any) => {
   const {setUserThunk} = props;
-  const [login, setLogin] = useState<string>(IS_DEV ? '' : '');
+  const [login, setLogin] = useState<string>(IS_DEV ? 'i-33' : '');
   const [password, setPassword] = useState<string>(IS_DEV ? '' : '');
   const [deviceName, setDeviceName] = useState<string>('');
   const [error, setError] = useState<string>('');

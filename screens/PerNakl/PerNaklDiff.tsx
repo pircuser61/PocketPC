@@ -72,7 +72,7 @@ const Header = () => (
 );
 
 const rowRender = (_: any, item: PerNaklDiffRow) => {
-  console.log('\x1b[36m', 'ROWRENDER ');
+  //  console.log('\x1b[36m', 'ROWRENDER ');
   return <Row x={item} />;
 };
 
@@ -80,19 +80,21 @@ export const PerNaklDiff = ({
   data,
   onSubmit,
   onCancel,
+  active,
 }: {
   data: PerNaklDiffRow[];
   onSubmit?: () => void;
   onCancel: () => void;
+  active: boolean;
 }) => {
   const listRef = useRef<any>();
   const dp = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data);
 
-  console.log('\x1b[34m', 'RENDER DIFF');
+  // console.log('\x1b[34m', 'RENDER DIFF');
   //console.log(dp.getAllData());
 
   return (
-    <SimpleDlg onSubmit={onSubmit} onCancel={onCancel}>
+    <SimpleDlg onSubmit={onSubmit} onCancel={onCancel} active={active}>
       <Text style={styles.cellText}>Укажите причины расхождений</Text>
       <View style={styles.LV_View}>
         <Header />
