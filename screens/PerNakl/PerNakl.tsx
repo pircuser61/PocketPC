@@ -15,7 +15,7 @@ interface IPerInfo {
 }
 
 const PerNakl = (props: any) => {
-  const [numNakl, setInputValue] = useState(IS_DEV ? '91119272' : '');
+  const [numNakl, setInputValue] = useState(IS_DEV ? '91474372' : '');
   const [loading, setloading] = useState(false);
 
   let isMounted = true;

@@ -92,8 +92,8 @@ const getSoapXml = (City, wsName, request) => {
   const xmlSerializer = new XMLSerializer();
   const xmlReq = xmlSerializer.serializeToString(docReq);
 
-  console.log('\x1b[33m', 'JSON REQUEST V2');
-  console.log('\x1b[33m', request);
+  //console.log('\x1b[33m', 'JSON REQUEST V2');
+  //console.log('\x1b[33m', request);
   console.log('\x1b[32m', 'XML REQUEST V2');
   console.log('\x1b[32m', xmlReq);
 
@@ -175,8 +175,8 @@ const parseResponse = (wsName, response_raw, responseParserConfig) => {
 
   if (!response_xml) throw 'Получен пустой ответ. (нет xmlOut)';
 
-  console.log('\x1b[35m', 'RESPONSE XML:');
-  console.log('\x1b[35m', response_xml);
+  console.log('\x1b[36m', 'RESPONSE XML:');
+  console.log('\x1b[36m', response_xml);
 
   const x2js = new X2JS(responseParserConfig);
   let response_json;
@@ -187,8 +187,8 @@ const parseResponse = (wsName, response_raw, responseParserConfig) => {
   }
   if (!response_json) throw 'Ошибка извлечения тела ответа [2].';
 
-  console.log('\x1b[36m', 'JSON RESPONSE');
-  console.log('\x1b[36m', response_json);
+  //console.log('\x1b[35m', 'JSON RESPONSE');
+  //console.log('\x1b[35m', response_json);
 
   for (let key in response_json) {
     if (key === 'ReturnResponse') {

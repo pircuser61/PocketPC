@@ -10,18 +10,22 @@ import md5 from 'md5';
 import UserStore from '../../mobx/UserStore';
 import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
 import useIsMounted from '../../customHooks/UseMountedHook';
-import PerNaklDiff, {PerNaklDiffRow} from './PerNaklDiff';
+import PerNaklDiffPal, {Palett} from './PerNaklDiffPal';
+import PerNaklDiffGoods, {PalettRow} from './PerNaklDiffGoods';
+import PerNaklDiffReason, {ReasonRow} from './PerNaklDiffReason';
+import PerNaklDiff, {Diff} from './PerNaklDiff';
 
 enum Steps {
   ask,
   loginFrom,
   kppDlg,
   loginTo,
-  askDiff,
   diffDlg,
+  hasAkt,
+  err,
 }
 
-type NaklInfo = {
+export type NaklInfo = {
   PerZo: string;
   Closed: string;
   UseSkl: string;
@@ -29,23 +33,26 @@ type NaklInfo = {
   UserTo: string;
   UserKpp: string;
   KppInfo: string;
+  AktDiff?: string;
 };
 
-type Response = NaklInfo & {
-  PerNaklDiff?: {PerNaklDiffRow?: PerNaklDiffRow[]};
-};
+type Response = NaklInfo & {Diff: Diff};
 
 type State = {
   step: Steps;
   isLoading: boolean;
   PassFrom: string;
-  diff?: PerNaklDiffRow[];
+  errText?: string;
+  diff?: Diff;
+  Goods?: PalettRow[];
 } & NaklInfo;
 
 type Action = {
   type: string;
   user?: {login: string; passw: string};
   response?: Response;
+  value?: string;
+  num_value?: number;
 };
 
 const initState: State = {
@@ -62,8 +69,12 @@ const initState: State = {
 };
 
 function reducer(state: State, action: Action): State {
+  console.log('\x1b[31m', 'REDUSER: ' + action.type + ' ' + action);
+
   state.isLoading = false;
   switch (action.type) {
+    case 'requestError':
+      return {...state};
     case 'request':
       return {...state, isLoading: true};
     case 'response': {
@@ -74,19 +85,25 @@ function reducer(state: State, action: Action): State {
         return newState;
       }
 
-      if (action.response?.PerNaklDiff?.PerNaklDiffRow) {
-        //console.log('\x1b[31m', 'REDUSER');
-        //console.log(action.response.PerNaklDiff.PerNaklDiffRow);
+      if (action.response?.Diff) {
+        //console.log('\x1b[31m', 'RESOPNSE DIFF');
+        //console.log(action.response.Diff.Reason.ReasonRow);
         return {
           ...state,
-          step: Steps.askDiff,
-          diff: action.response.PerNaklDiff.PerNaklDiffRow ?? [],
+          step: Steps.diffDlg,
+          diff: action.response.Diff ?? [],
         };
+      }
+
+      if (action.response?.AktDiff === 'true') {
+        return {...state, step: Steps.hasAkt};
       }
 
       alertMsg('Накладная НЕ закрыта!');
       return {...state, step: Steps.ask};
     }
+    case 'getUserFrom':
+      return {...state, step: Steps.loginFrom};
     case 'userFrom':
       return {
         ...state,
@@ -100,9 +117,16 @@ function reducer(state: State, action: Action): State {
 
     case 'diffDlg':
       return {...state, step: Steps.diffDlg};
+    case 'diffDlgOk':
+      return {...state, step: Steps.diffDlg};
+
+    default:
+      return {
+        ...state,
+        step: Steps.err,
+        errText: 'unsupported action: ' + action.type,
+      };
   }
-  alertMsg('unsupported action: ' + action.type);
-  return {...state};
 }
 
 const PerNaklClose = ({
@@ -120,7 +144,11 @@ const PerNaklClose = ({
     onHide();
   };
   const parseParam = {
-    arrayAccessFormPaths: ['PocketPerClose.PerNaklDiff.PerNaklDiffRow'],
+    arrayAccessFormPaths: [
+      'PocketPerClose.Diff.Palett',
+      'PocketPerClose.Diff.Palett.PalettRow',
+      'PocketPerClose.Diff.Reason.ReasonRow',
+    ],
   };
 
   //console.log('\x1b[34m', 'RENDER');
@@ -138,11 +166,13 @@ const PerNaklClose = ({
         passwTo: md5(passwTo),
       };
       if (state.diff) {
+        /*
         state.diff = state.diff.map(x => {
           x.CodReason = '01';
           x.QtyDiff = Number(x.QtyPer) - Number(x.QtyFact) + '';
           return x;
         });
+        */
         Object.assign(req, {PerNaklDiff: {PerNaklDiffRow: state.diff}});
       }
       const response: Response = await request(
@@ -157,6 +187,7 @@ const PerNaklClose = ({
       }
     } catch (error) {
       if (isMounted.current) alertError(error);
+      dispatch({type: 'requestError'});
       // onHide();
     }
   };
@@ -165,7 +196,7 @@ const PerNaklClose = ({
     try {
       dispatch({type: 'request'});
 
-      const response: NaklInfo = await request(
+      const response: Response = await request(
         'PocketPerClose',
         {
           numNakl,
@@ -186,6 +217,13 @@ const PerNaklClose = ({
   };
 
   switch (state.step) {
+    case Steps.err:
+      return (
+        <SimpleDlg onCancel={onHide}>
+          <Text style={styles.labelText}>Непредвиденная ошибка</Text>
+          <Text style={styles.labelText}>{state.errText}</Text>
+        </SimpleDlg>
+      );
     case Steps.ask:
       return (
         <SimpleDlg onSubmit={tryCloseNakl} onCancel={onHide}>
@@ -193,33 +231,41 @@ const PerNaklClose = ({
             {'Закрыть накладную ' + numNakl + '?'}
           </Text>
         </SimpleDlg>
-      );
-    case Steps.askDiff:
-      return (
-        <SimpleDlg
-          onSubmit={() => {
-            dispatch({type: 'diffDlg'});
-          }}
-          onCancel={onHide}>
-          <Text style={styles.labelText}>
-            Внимние! Есть расхождения. Продолжить?
-          </Text>
-        </SimpleDlg>
-      );
+      ); /*
     case Steps.diffDlg:
       return (
         <PerNaklDiff
-          data={state.diff ?? []}
+          onSubmit={() => {
+            dispatch({type: 'diffDlgOk'});
+          }}
           onCancel={onHide}
-          onSubmit={() => endCloseNakl('', '')}
-          active={!state.isLoading}
+          //initState2 = {state.diff}
         />
       );
-
+*/
+    case Steps.hasAkt:
+      return (
+        <SimpleDlg
+          onSubmit={() => {
+            dispatch({type: 'getUserFrom'});
+          }}
+          onCancel={onHide}>
+          <Text style={styles.labelText}>
+            Есть акт несоответствия/брака к накладной!
+          </Text>
+          <Text style={styles.labelText}>
+            Принимаем по системе сдал/принял...
+          </Text>
+        </SimpleDlg>
+      );
     case Steps.loginFrom:
       return (
         <LoginDlg
-          title="Представитель зоны отгрузки"
+          title={
+            state.PerZo
+              ? 'Представитель зоны отгрузки'
+              : 'Представитель сдающей стороны'
+          }
           onSubmit={(login, passw) => {
             dispatch({type: 'userFrom', user: {login, passw}});
           }}
@@ -257,9 +303,11 @@ const PerNaklClose = ({
       return (
         <LoginDlg
           title={
-            state.UseSkl === 'true'
-              ? 'Представитель склада'
-              : 'Представитель торгового зала'
+            state.PerZo
+              ? state.UseSkl === 'true'
+                ? 'Представитель склада'
+                : 'Представитель торгового зала'
+              : 'Представитель принимающей стороны'
           }
           onSubmit={(uid, pass) => {
             endCloseNakl(uid, pass);

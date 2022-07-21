@@ -36,18 +36,6 @@ const layoutProvider = new LayoutProvider(
 const MarkHonest = (props: any /*{navigation, route, user}*/) => {
   const {NumProv, NumPal, IdNum, SpecsType, QtyReqd} = props.route.params;
 
-  console.log(
-    'RENDER :' +
-      'NumNakl ' +
-      NumProv +
-      ' ' +
-      NumPal +
-      ' ' +
-      IdNum +
-      ' ' +
-      SpecsType,
-  );
-
   const isMounted = useIsMounted();
   const [loading, setLoading] = useState(true);
   const [deleteDlg, setDeleteDlg] = useState(false);
@@ -57,6 +45,19 @@ const MarkHonest = (props: any /*{navigation, route, user}*/) => {
   }, []);
   const selRow = useRef<IQR | null>(null);
   const dpRef = useRef(new DataProvider((r1, r2) => r1 !== r2));
+
+  console.log(
+    '\n\n==============\nRENDER XXX: loading ' +
+      loading +
+      ' NumNakl ' +
+      NumProv +
+      ' ' +
+      NumPal +
+      ' ' +
+      IdNum +
+      ' ' +
+      SpecsType,
+  );
 
   const parseParam = {arrayAccessFormPaths: ['MarkHonestDoc.Mark.MarkRow']};
   const onScan = async (data: string, type: string) => {
@@ -90,7 +91,6 @@ const MarkHonest = (props: any /*{navigation, route, user}*/) => {
   useScanner(onScan);
 
   const getQRList = async (cmd?: object) => {
-    console.log(cmd);
     try {
       if (!isMounted.current) return;
       setLoading(true);
@@ -183,7 +183,7 @@ const MarkHonest = (props: any /*{navigation, route, user}*/) => {
       </View>
       <SimpleButton
         text="Обновить"
-        onPress={getQRList}
+        onPress={() => getQRList()} ///onPress = getQRList полжит event в парметры и все помрет
         active={!loading}
         containerStyle={styles.updateButton}
       />
