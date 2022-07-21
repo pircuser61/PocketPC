@@ -1,7 +1,7 @@
-import {useReducer} from 'react';
+import React, {useReducer} from 'react';
+
 import {StyleSheet, Text} from 'react-native';
 import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
-import {alertMsg} from '../../constants/funcrions';
 import PerNaklDiffGoods, {PalettRow} from './PerNaklDiffGoods';
 import PerNaklDiffPal, {Palett} from './PerNaklDiffPal';
 import PerNaklDiffReason, {ReasonRow} from './PerNaklDiffReason';
@@ -15,7 +15,6 @@ enum Steps {
   diffPaletts,
   diffGoods,
   diffReason,
-
   err,
 }
 
@@ -33,7 +32,7 @@ type DiffState = {
   step: Steps;
   errText?: string;
   diff: Diff;
-  Goods: PalettRow[];
+  GoodsInPalett?: PalettRow[];
 };
 
 type Action = {
@@ -42,83 +41,74 @@ type Action = {
   num_value?: number;
 };
 
-const initState: DiffState = {
-  step: Steps.askDiff,
-  diff: {
-    HasDiff: 'true',
-    Palett: [],
-    Reason: {ReasonRow: []},
-    ReasonDict: {},
-    Goods: [],
-  },
-  Goods: [],
-};
-
 function reducer(state: DiffState, action: Action): DiffState {
   console.log('\x1b[31m', 'DIFF REDUSER: ' + action.type + ' ' + action);
 
+  if (!state.diff)
+    return {...state, step: Steps.err, errText: 'Нет расхождений'};
   switch (action.type) {
-    case 'diffDlg':
+    case 'diffPaletts':
       return {...state, step: Steps.diffPaletts};
     case 'diffGoods':
       if (!action?.str_value)
         return {...state, step: Steps.err, errText: 'Не указан палетт'};
 
-      if (state.diff?.CurrPalett !== action.str_value) {
+      if (state.diff.CurrPalett !== action.str_value) {
         state.diff.CurrPalett = action.str_value;
-        /*
-        state.Goods = state.diff?.Palett.filter(
-          x => x.NumPal === action.value,
+
+        state.GoodsInPalett = state.diff.Palett.filter(
+          x => x.NumPal === action.str_value,
         )[0].PalettRow;
-        */
       }
 
       return {...state, step: Steps.diffGoods};
 
     case 'diffReason':
-      if (!state.diff)
-        return {...state, step: Steps.err, errText: 'Нет расхождений'};
       if (!action?.num_value)
         return {...state, step: Steps.err, errText: 'Не указан товар'};
       state.diff.CurrGood = action.num_value;
       return {...state, step: Steps.diffReason};
 
     case 'setDiffReason': {
-      if (!state.Goods)
-        return {...state, step: Steps.err, errText: 'Нет товаров'};
-      if (!action?.str_value)
-        return {...state, step: Steps.err, errText: 'Не выбрана причина'};
       if (!state.diff?.CurrGood)
         return {
           ...state,
           step: Steps.err,
           errText: 'Не выбран товар',
         };
-      state.Goods[state.diff?.CurrGood].CodReason = action.str_value;
+      state.diff.Goods[state.diff.CurrGood].CodReason = action.str_value;
       return {...state, step: Steps.diffGoods};
     }
+
+    default:
+      return {
+        ...state,
+        step: Steps.err,
+        errText: 'unsupported action: ' + action.type,
+      };
   }
-  alertMsg('unsupported action: ' + action.type);
-  return {...state};
 }
 
 const PerNaklDiff = ({
   onSubmit,
   onCancel,
-}: // initState2,
-{
+  data,
+}: {
   onSubmit: () => void;
   onCancel: () => void;
-  //initState2?: Diff;
+  data: Diff;
 }) => {
-  const [state, dispatch] = useReducer(reducer, initState);
-
+  const [state, dispatch] = useReducer(reducer, {
+    step: Steps.askDiff,
+    diff: data,
+  });
+  console.log(data);
   switch (state.step) {
     case Steps.askDiff:
       return (
         <SimpleDlg
           onSubmit={() => {
-            dispatch({type: 'diffDlg'});
+            dispatch({type: 'diffPaletts'});
           }}
           onCancel={onCancel}>
           <Text style={styles.labelText}>
@@ -130,11 +120,9 @@ const PerNaklDiff = ({
     case Steps.diffPaletts:
       return (
         <PerNaklDiffPal
-          data={state.diff.Palett}
+          data={state.diff.Palett ?? []}
           onCancel={onCancel}
-          onSubmit={() => {
-            dispatch({type: 'getUserFrom'});
-          }}
+          onSubmit={onSubmit}
           onSelect={(numPal: string) => {
             dispatch({type: 'diffGoods', str_value: numPal});
           }}
@@ -144,11 +132,11 @@ const PerNaklDiff = ({
     case Steps.diffGoods:
       return (
         <PerNaklDiffGoods
-          data={state.Goods}
-          reason={state.diff.Reason.ReasonRow}
+          data={state.GoodsInPalett ?? []}
+          reason={state.diff.ReasonDict}
           onCancel={onCancel}
           onSubmit={() => {
-            dispatch({type: 'diffDlg'});
+            dispatch({type: 'diffPaletts'});
           }}
           onSelect={(ix: number) => {
             dispatch({type: 'diffReason', num_value: ix});
@@ -167,11 +155,18 @@ const PerNaklDiff = ({
           active={true}
         />
       );
-    default:
+    case Steps.err:
       return (
         <SimpleDlg onCancel={onCancel}>
           <Text style={styles.labelText}>Непредвиденная ошибка</Text>
           <Text style={styles.labelText}>{state.errText}</Text>
+        </SimpleDlg>
+      );
+    default:
+      return (
+        <SimpleDlg onCancel={onCancel}>
+          <Text style={styles.labelText}>Ошибка статуса...</Text>
+          <Text>{state.step}</Text>
         </SimpleDlg>
       );
   }

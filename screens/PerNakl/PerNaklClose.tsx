@@ -10,9 +10,7 @@ import md5 from 'md5';
 import UserStore from '../../mobx/UserStore';
 import SimpleDlg from '../../components/SystemComponents/SimpleDlg';
 import useIsMounted from '../../customHooks/UseMountedHook';
-import PerNaklDiffPal, {Palett} from './PerNaklDiffPal';
-import PerNaklDiffGoods, {PalettRow} from './PerNaklDiffGoods';
-import PerNaklDiffReason, {ReasonRow} from './PerNaklDiffReason';
+
 import PerNaklDiff, {Diff} from './PerNaklDiff';
 
 enum Steps {
@@ -44,7 +42,7 @@ type State = {
   PassFrom: string;
   errText?: string;
   diff?: Diff;
-  Goods?: PalettRow[];
+  // Goods?: PalettRow[];
 } & NaklInfo;
 
 type Action = {
@@ -118,7 +116,7 @@ function reducer(state: State, action: Action): State {
     case 'diffDlg':
       return {...state, step: Steps.diffDlg};
     case 'diffDlgOk':
-      return {...state, step: Steps.diffDlg};
+      return {...state, step: Steps.loginFrom};
 
     default:
       return {
@@ -231,7 +229,8 @@ const PerNaklClose = ({
             {'Закрыть накладную ' + numNakl + '?'}
           </Text>
         </SimpleDlg>
-      ); /*
+      );
+
     case Steps.diffDlg:
       return (
         <PerNaklDiff
@@ -239,10 +238,10 @@ const PerNaklClose = ({
             dispatch({type: 'diffDlgOk'});
           }}
           onCancel={onHide}
-          //initState2 = {state.diff}
+          data={state.diff!}
         />
       );
-*/
+
     case Steps.hasAkt:
       return (
         <SimpleDlg

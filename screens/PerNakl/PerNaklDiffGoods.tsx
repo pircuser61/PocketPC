@@ -12,7 +12,7 @@ export type PalettRow = {
   QtyTotalPer: string;
   QtyTotalPal: string;
 
-  CodReason: string;
+  CodReason?: string;
   QtyDiff?: string;
 };
 
@@ -43,7 +43,7 @@ const Cell = ({children}: {children?: React.ReactNode}) => (
   </View>
 );
 
-const Row = ({x, style}: {x: PalettRow; style?: any}) => (
+const Row = ({x}: {x: PalettRow}) => (
   <>
     <Cell>{x.CodGood}</Cell>
     <Cell>{x.QtyFact}</Cell>
@@ -66,7 +66,7 @@ export const PerNaklDiffGoods = ({
   active,
 }: {
   data: PalettRow[];
-  reason: ReasonRow[];
+  reason: {};
   onSubmit?: () => void;
   onCancel: () => void;
   onSelect: (index: number) => void;
