@@ -21,6 +21,7 @@ enum Steps {
   diffDlg,
   hasAkt,
   err,
+  warning,
 }
 
 export type NaklInfo = {
@@ -42,7 +43,6 @@ type State = {
   PassFrom: string;
   errText?: string;
   diff?: Diff;
-  // Goods?: PalettRow[];
 } & NaklInfo;
 
 type Action = {
@@ -86,6 +86,13 @@ function reducer(state: State, action: Action): State {
       if (action.response?.Diff) {
         //console.log('\x1b[31m', 'RESOPNSE DIFF');
         //console.log(action.response.Diff.Reason.ReasonRow);
+        //
+        var obj: {[key: string]: string} = {};
+        action.response.Diff.Reason.ReasonRow.map((val, _) => {
+          obj[val.Cod] = val.Name;
+        });
+        action.response.Diff.ReasonDict = obj;
+
         return {
           ...state,
           step: Steps.diffDlg,
@@ -152,6 +159,22 @@ const PerNaklClose = ({
   //console.log('\x1b[34m', 'RENDER');
   //console.log(state);
 
+  const checkUid = async (User: string, passw: string) => {
+    try {
+      dispatch({type: 'request'});
+      const req = {
+        User,
+        Passw: md5(passw),
+      };
+
+      const response: {} = await request('PocketCheckLogin', req);
+      console.log('CHECK UID');
+      console.log(response);
+    } catch (error) {
+      dispatch({type: 'requestError'});
+    }
+  };
+
   const endCloseNakl = async (userTo: string, passwTo: string) => {
     try {
       dispatch({type: 'request'});
@@ -164,14 +187,7 @@ const PerNaklClose = ({
         passwTo: md5(passwTo),
       };
       if (state.diff) {
-        /*
-        state.diff = state.diff.map(x => {
-          x.CodReason = '01';
-          x.QtyDiff = Number(x.QtyPer) - Number(x.QtyFact) + '';
-          return x;
-        });
-        */
-        Object.assign(req, {PerNaklDiff: {PerNaklDiffRow: state.diff}});
+        Object.assign(req, {PerNaklDiff: {PerNaklDiffRow: state.diff.Palett}});
       }
       const response: Response = await request(
         'PocketPerClose',
@@ -222,6 +238,17 @@ const PerNaklClose = ({
           <Text style={styles.labelText}>{state.errText}</Text>
         </SimpleDlg>
       );
+    case Steps.warning:
+      return (
+        <SimpleDlg
+          onSubmit={() => {
+            dispatch();
+          }}
+          onCancel={onHide}>
+          <Text style={styles.labelText}>Непредвиденная ошибка</Text>
+          <Text style={styles.labelText}>{state.errText}</Text>
+        </SimpleDlg>
+      );
     case Steps.ask:
       return (
         <SimpleDlg onSubmit={tryCloseNakl} onCancel={onHide}>
@@ -266,6 +293,8 @@ const PerNaklClose = ({
               : 'Представитель сдающей стороны'
           }
           onSubmit={(login, passw) => {
+            dispatch({type: 'request'});
+            checkUid(login, passw); // Добавить крисивое сообщение об ошибке, и блокировку на время запроса....ы
             dispatch({type: 'userFrom', user: {login, passw}});
           }}
           onCancel={onHide}
