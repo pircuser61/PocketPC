@@ -24,7 +24,7 @@ export const PerNaklDiffPal = ({
   data: Palett[];
   onSubmit?: () => void;
   onCancel: () => void;
-  onSelect: (x: string) => void;
+  onSelect: (x: number) => void;
   active: boolean;
 }) => {
   const dp = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data);
@@ -32,14 +32,14 @@ export const PerNaklDiffPal = ({
   console.log('\x1b[34m', 'RENDER LIST PAL');
   console.log(data);
 
-  const rowRender = (_: any, item: Palett) => {
+  const rowRender = (_: any, item: Palett, index: number) => {
     console.log(item);
     return (
       <TouchableOpacity
         style={styles.rowLine}
         delayLongPress={300}
         onPress={() => {
-          onSelect(item.NumPal);
+          onSelect(index);
         }}>
         <Text style={styles.cellText}>{item.NumPal}</Text>
       </TouchableOpacity>

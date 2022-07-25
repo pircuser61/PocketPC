@@ -11,13 +11,11 @@ export const PerNaklDiffReason = ({
   data,
   onSelect,
   onCancel,
-  active,
 }: {
   data?: ReasonRow[];
   onSelect: (codReasong: string) => void;
   onCancel: () => void;
   //  onSelect: (x: string) => void;
-  active: boolean;
 }) => {
   // console.log('\x1b[34m', 'RENDER DIFF');
   //console.log(dp.getAllData());
@@ -36,7 +34,7 @@ export const PerNaklDiffReason = ({
   };
 
   return (
-    <SimpleDlg onCancel={onCancel} active={active}>
+    <SimpleDlg onCancel={onCancel}>
       <Text style={styles.cellText}>Укажите причину</Text>
 
       <FlatList

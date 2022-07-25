@@ -21,18 +21,16 @@ enum Steps {
 export type Diff = {
   HasDiff: string;
   Palett: Palett[]; // список палетт в накладной
+
   Reason: {ReasonRow: ReasonRow[]}; // список доступных причин
-  ReasonDict: object; // Reason as object: [{'1':'A'}, {2:'B'}] => {'1':'A'; '2':'B'}
-  CurrPalett?: string; // Текущий палетт, в котором смотрим товары с расхождения
-  CurrGood?: number; // номер Товара для которого указывается причина расхождений
-  Goods: PalettRow[];
+  ReasonDict: {[key: string]: string}; // Reason as object: [{'1':'A'}, {2:'B'}] => {'1':'A'; '2':'B'}
+  CurrPalett?: Palett; // Текущий палетт, в котором смотрим товары с расхождения
+  CurrGood?: PalettRow; // номер Товара для которого указывается причина расхождений
 };
 
-type DiffState = {
+type DiffState = Diff & {
   step: Steps;
   errText?: string;
-  diff: Diff;
-  GoodsInPalett?: PalettRow[];
 };
 
 type Action = {
@@ -42,41 +40,52 @@ type Action = {
 };
 
 function reducer(state: DiffState, action: Action): DiffState {
-  console.log('\x1b[31m', 'DIFF REDUSER: ' + action.type + ' ' + action);
+  console.log(
+    '\x1b[31m',
+    'DIFF REDUSER: ' +
+      action.type +
+      ' ' +
+      action.type +
+      ' ' +
+      action.num_value +
+      ' ' +
+      action.str_value,
+  );
 
-  if (!state.diff)
-    return {...state, step: Steps.err, errText: 'Нет расхождений'};
   switch (action.type) {
     case 'diffPaletts':
       return {...state, step: Steps.diffPaletts};
     case 'diffGoods':
-      if (!action?.str_value)
-        return {...state, step: Steps.err, errText: 'Не указан палетт'};
-
-      if (state.diff.CurrPalett !== action.str_value) {
-        state.diff.CurrPalett = action.str_value;
-
-        state.GoodsInPalett = state.diff.Palett.filter(
-          x => x.NumPal === action.str_value,
-        )[0].PalettRow;
+      if (action?.num_value !== undefined && action?.num_value >= 0) {
+        state.CurrPalett = state.Palett[action.num_value];
+        return {...state, step: Steps.diffGoods};
       }
-
-      return {...state, step: Steps.diffGoods};
+      return {...state, step: Steps.err, errText: 'Не указан палетт'};
 
     case 'diffReason':
-      if (!action?.num_value)
-        return {...state, step: Steps.err, errText: 'Не указан товар'};
-      state.diff.CurrGood = action.num_value;
-      return {...state, step: Steps.diffReason};
-
+      if (state.CurrPalett === undefined) {
+        return {...state, step: Steps.err, errText: 'Не указан палетт'};
+      }
+      if (action?.num_value !== undefined && action?.num_value >= 0) {
+        state.CurrGood = state.CurrPalett.PalettRow[action.num_value];
+        return {...state, step: Steps.diffReason};
+      }
+      return {...state, step: Steps.err, errText: 'Не указан товар'};
     case 'setDiffReason': {
-      if (!state.diff?.CurrGood)
+      if (!state.CurrGood)
         return {
           ...state,
           step: Steps.err,
           errText: 'Не выбран товар',
         };
-      state.diff.Goods[state.diff.CurrGood].CodReason = action.str_value;
+      if (!action.str_value)
+        return {
+          ...state,
+          step: Steps.err,
+          errText: 'Не выбрана причина',
+        };
+      state.CurrGood.CodReason = action.str_value;
+
       return {...state, step: Steps.diffGoods};
     }
 
@@ -99,8 +108,8 @@ const PerNaklDiff = ({
   data: Diff;
 }) => {
   const [state, dispatch] = useReducer(reducer, {
+    ...data,
     step: Steps.askDiff,
-    diff: data,
   });
   console.log(data);
   switch (state.step) {
@@ -120,11 +129,11 @@ const PerNaklDiff = ({
     case Steps.diffPaletts:
       return (
         <PerNaklDiffPal
-          data={state.diff.Palett ?? []}
+          data={state.Palett ?? []}
           onCancel={onCancel}
           onSubmit={onSubmit}
-          onSelect={(numPal: string) => {
-            dispatch({type: 'diffGoods', str_value: numPal});
+          onSelect={(ix: number) => {
+            dispatch({type: 'diffGoods', num_value: ix});
           }}
           active={true}
         />
@@ -132,8 +141,8 @@ const PerNaklDiff = ({
     case Steps.diffGoods:
       return (
         <PerNaklDiffGoods
-          data={state.GoodsInPalett ?? []}
-          reason={state.diff.ReasonDict}
+          palett={state.CurrPalett!}
+          reason={state.ReasonDict}
           onCancel={onCancel}
           onSubmit={() => {
             dispatch({type: 'diffPaletts'});
@@ -147,12 +156,11 @@ const PerNaklDiff = ({
     case Steps.diffReason:
       return (
         <PerNaklDiffReason
-          data={state.diff?.Reason.ReasonRow}
+          data={state.Reason.ReasonRow ?? []}
           onCancel={onCancel}
           onSelect={(codReason: string) => {
             dispatch({type: 'setDiffReason', str_value: codReason});
           }}
-          active={true}
         />
       );
     case Steps.err:
